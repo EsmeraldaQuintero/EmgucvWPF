@@ -22,3 +22,27 @@ c:\users\uabc\documents\visual studio 2015\Projects\Prueba de stream\Prueba de s
 c:\users\uabc\documents\visual studio 2015\Projects\Prueba de stream\Prueba de stream\bin\Debug\ZedGraph.xml
 c:\users\uabc\documents\visual studio 2015\Projects\Prueba de stream\Prueba de stream\bin\Debug\zh-CN\Emgu.CV.UI.resources.dll
 c:\users\uabc\documents\visual studio 2015\Projects\Prueba de stream\Prueba de stream\bin\Debug\zh-CN\ZedGraph.resources.dll
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\bin\Debug\Prueba de stream.exe.config
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\bin\Debug\Prueba de stream.exe
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\bin\Debug\Prueba de stream.pdb
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\bin\Debug\Emgu.CV.UI.dll
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\bin\Debug\Emgu.CV.World.dll
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\bin\Debug\ZedGraph.dll
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\bin\Debug\Emgu.CV.UI.pdb
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\bin\Debug\Emgu.CV.UI.xml
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\bin\Debug\Emgu.CV.World.pdb
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\bin\Debug\Emgu.CV.World.xml
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\bin\Debug\ZedGraph.xml
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\bin\Debug\zh-CN\Emgu.CV.UI.resources.dll
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\bin\Debug\zh-CN\ZedGraph.resources.dll
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream.csprojResolveAssemblyReference.cache
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\MainWindow.g.cs
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\App.g.cs
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream_MarkupCompile.cache
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream_MarkupCompile.lref
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\MainWindow.baml
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream.g.resources
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba_de_stream.Properties.Resources.resources
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream.csproj.GenerateResource.Cache
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream.exe
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream.pdb
