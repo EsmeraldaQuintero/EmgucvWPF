@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Prueba_de_stream"
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="800">
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -16,9 +17,12 @@
                 Grid.Row="0"
                 Click="captureButtonClick"
         />
-        <Image Name="image1"
+        <Image x:Name="sourceImage"
                Stretch="Fill"
                Grid.Row="1"
-        />
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+         />
+        
     </Grid>
 </Window>
