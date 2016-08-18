@@ -27,7 +27,8 @@ namespace Prueba_de_stream
         private Capture _capture = null;
         private bool _captureInProgress;
         int CameraDevice = 0;
-
+        Image<Bgr, Byte> currentImage;
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -55,6 +56,7 @@ namespace Prueba_de_stream
                 {  //stop the capture
                     captureButton.Content = "Start Capture";
                     _capture.Pause();
+                    updateImage();
                 }
                 else
                 {   //start the capture
@@ -66,16 +68,18 @@ namespace Prueba_de_stream
             }
         }
 
-
-
-        private ImageBox captureImage;
-
         private void ProcessFrame(object sender, EventArgs arg)
         {
             Mat frame = new Mat();
             _capture.Retrieve(frame, CameraDevice);
 
-            //captureImage.Image = frame;
+            currentImage = frame.ToImage<Bgr,Byte>();
+
+        }
+
+        private void updateImage()
+        {
+            image1.Source = BitmapSourceConvert.ToBitmapSource(currentImage);
         }
 
     }
