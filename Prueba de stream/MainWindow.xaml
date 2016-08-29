@@ -5,21 +5,47 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Prueba_de_stream"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="800">
+        Title="MainWindow" Height="600" Width="1200">
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="4*"/>
-
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        
         <Button Name="captureButton"
                 Grid.Row="0"
+                Grid.Column="0"
                 Click="captureButtonClick"
+        />
+        <TextBlock Name="MatchTimeText"
+                   Grid.Row="0"
+                   Grid.Column="1"
+                   Grid.ColumnSpan="2"
         />
         <Image x:Name="sourceImage"
                Stretch="Fill"
                Grid.Row="1"
+               Grid.Column="0"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+         />
+        <Image x:Name="modelImage"
+               Stretch="Fill"
+               Grid.Row="1"
+               Grid.Column="1"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+         />
+        <Image x:Name="resultImage"
+               Stretch="Fill"
+               Grid.Row="1"
+               Grid.Column="2"
                HorizontalAlignment="Center"
                VerticalAlignment="Center"
          />

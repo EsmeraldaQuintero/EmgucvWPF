@@ -1,23 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Drawing;
 using System.IO;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV.UI;
 using Emgu.CV;
+using Emgu.CV.Cuda;
 
 
 
@@ -31,8 +21,8 @@ namespace Prueba_de_stream
         private Capture _capture = null;
         private bool _captureInProgress;
         int CameraDevice = 0;
-        Image<Bgr, Byte> currentFrame;
-        
+        long matchTime;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -80,23 +70,36 @@ namespace Prueba_de_stream
         {
             Mat newFrame = new Mat();
             _capture.Retrieve(newFrame);
-            currentFrame = newFrame.ToImage<Bgr, Byte>();
+            Mat newModelFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\Img1.jpg", LoadImageType.Grayscale);
 
-
-            var processFrame = newFrame.ToImage<Gray, Byte>();
-            //var processFrame = skinDetection.YCrCbDetectSkin(newFrame, YCrCb_min, YCrCb_max);
-            //DetectGesture(processFrame);
+            var currentFrame = newFrame.ToImage<Gray, Byte>();
+            var processFrame = newModelFrame.ToImage<Gray, Byte>();
             DisplayImage(currentFrame, processFrame);
+
+            using (Mat modelImage = currentFrame.Mat)
+            using (Mat observedImage = processFrame.Mat)
+            {
+                Mat result = DrawMatches.Draw(modelImage, observedImage, out matchTime);
+                var resultFrame = result.ToImage<Bgr, Byte>();
+                DisplayResult(resultFrame, matchTime);
+            }
         }
 
+        private void DisplayResult(Image<Bgr, Byte> resultFrame, long matchTime)
+        {
+            Dispatcher.Invoke(new Action(() =>
+            {
+                resultImage.Source = ToImageSource(resultFrame.Bitmap);
+                MatchTimeText.Text = matchTime.ToString();
+            }));
+        }
 
-        private void DisplayImage(Image<Bgr, Byte> currentFrame, Image<Gray, Byte> processFrame)
+        private void DisplayImage(Image<Gray, Byte> currentFrame, Image<Gray, Byte> processFrame)
         {
             Dispatcher.Invoke(new Action(() =>
             {
                 sourceImage.Source = ToImageSource(currentFrame.Bitmap);
-
-               // motionImage.Source = ToImageSource(processFrame.Bitmap);
+                modelImage.Source = ToImageSource(processFrame.Bitmap);
             }));
         }
 
