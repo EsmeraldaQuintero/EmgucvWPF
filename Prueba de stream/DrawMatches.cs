@@ -88,6 +88,20 @@ namespace Prueba_de_stream
 
                     // extract features from the observed image
                     UMat observedDescriptors = new UMat();
+
+
+
+
+
+                    //VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
+                    //Mat hierarchy = new Mat();
+                    //CvInvoke.FindContours(observedImage, contours, hierarchy, RetrType.List, ChainApproxMethod.ChainApproxSimple);
+                    //surfCPU.Compute(uObservedImage, observedKeyPoints, observedDescriptors);
+
+
+
+
+
                     surfCPU.DetectAndCompute(uObservedImage, null, observedKeyPoints, observedDescriptors, false);
                     BFMatcher matcher = new BFMatcher(DistanceType.L2);
                     matcher.Add(modelDescriptors);

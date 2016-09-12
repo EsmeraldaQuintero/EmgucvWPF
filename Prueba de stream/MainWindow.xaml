@@ -36,9 +36,13 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
             <Slider Name="minHue"
+                    Grid.Column="0"
                     Grid.Row="0"
                     IsEnabled="True"
                     Maximum="128"
@@ -46,28 +50,32 @@
                     Value="{Binding MinHue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
             <Slider Name="maxHue"
-                    Grid.Row="1"
+                    Grid.Column="1"
+                    Grid.Row="0"
                     Maximum="128"
                     Minimum="0"
                     Value="{Binding MaxHue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
 
             <Slider Name="minSat"
-                    Grid.Row="2"
+                    Grid.Column="0"
+                    Grid.Row="1"
                     IsEnabled="True"
                     Maximum="128"
                     Minimum="0"
                     Value="{Binding MinSat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
             <Slider Name="maxSat"
-                    Grid.Row="3"
+                    Grid.Column="1"
+                    Grid.Row="1"
                     Maximum="128"
                     Minimum="0"
                     Value="{Binding MaxSat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
 
             <Slider Name="minBrig"
-                    Grid.Row="4"
+                    Grid.Column="0"
+                    Grid.Row="2"
                     Maximum="255"
                     Minimum="0"
                     Value="{Binding MinBrig, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
@@ -75,9 +83,27 @@
             <Slider Name="maxBrig"
                     Maximum="255"
                     Minimum="0"
-                    Grid.Row="5"
+                    Grid.Column="1"
+                    Grid.Row="2"
                     Value="{Binding MaxBrig, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
+
+            <Slider Name="minSqrMin"
+                    Grid.Column="0"
+                    Grid.Row="3"
+                    Maximum="20"
+                    Minimum="2"
+                    Value="{Binding MinSqrMin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+            <Slider Name="minSqrMax"
+                    Grid.Column="0"
+                    Grid.Row="4"
+                    Maximum="20"
+                    Minimum="2"
+                    Value="{Binding MinSqrMax, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+
+
         </Grid>
         <TextBlock Name="HueSlider"
                    Grid.Row="0"
