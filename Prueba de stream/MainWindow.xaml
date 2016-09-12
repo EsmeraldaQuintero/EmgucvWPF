@@ -26,7 +26,62 @@
         <TextBlock Name="MatchTimeText"
                    Grid.Row="0"
                    Grid.Column="1"
-                   Grid.ColumnSpan="2"
+        />
+        <Grid Name="Sliders"
+              Grid.Row="0"
+              Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Slider Name="minHue"
+                    Grid.Row="0"
+                    IsEnabled="True"
+                    Maximum="128"
+                    Minimum="0"
+                    Value="{Binding MinHue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+            <Slider Name="maxHue"
+                    Grid.Row="1"
+                    Maximum="128"
+                    Minimum="0"
+                    Value="{Binding MaxHue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+
+            <Slider Name="minSat"
+                    Grid.Row="2"
+                    IsEnabled="True"
+                    Maximum="128"
+                    Minimum="0"
+                    Value="{Binding MinSat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+            <Slider Name="maxSat"
+                    Grid.Row="3"
+                    Maximum="128"
+                    Minimum="0"
+                    Value="{Binding MaxSat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+
+            <Slider Name="minBrig"
+                    Grid.Row="4"
+                    Maximum="255"
+                    Minimum="0"
+                    Value="{Binding MinBrig, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+            <Slider Name="maxBrig"
+                    Maximum="255"
+                    Minimum="0"
+                    Grid.Row="5"
+                    Value="{Binding MaxBrig, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+        </Grid>
+        <TextBlock Name="HueSlider"
+                   Grid.Row="0"
+                   Grid.Column="1"
         />
         <Image x:Name="sourceImage"
                Stretch="Fill"
