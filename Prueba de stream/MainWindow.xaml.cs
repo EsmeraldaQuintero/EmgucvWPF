@@ -198,22 +198,14 @@ namespace Prueba_de_stream
             //Mat newFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\Img1.jpg", LoadImageType.Grayscale);
             Mat newModelFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\Img6.jpg", LoadImageType.Grayscale);
 
-            //var currentFrame = newFrame.ToImage<Gray, Byte>().ThresholdToZero(new Gray(5.0)).Canny(80,150);
-
-            var currentFrame = newFrame.ToImage<Gray, Byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic);
-            var processFrame = newModelFrame.ToImage<Gray, Byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic);
+            var currentFrame = (newFrame.ToImage<Bgr, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic)).Convert<Hsv, byte>();
+            var processFrame = (newModelFrame.ToImage<Bgr, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic)).Convert<Hsv, byte>();
 
 
-
-
-
-            var image = (newFrame.ToImage<Bgr, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic)).Convert<Hsv, byte>();
-
-            image._EqualizeHist();
-            image._GammaCorrect(1.4d);
-            Image<Gray, byte>[] channels = image.Split();
+            currentFrame._EqualizeHist();
+            currentFrame._GammaCorrect(1.4d);
+            Image<Gray, byte>[] channels = currentFrame.Split();
             var ch0 = channels[0];  //matiz
-
             var ch1 = channels[1];  //saturacion
             var ch2 = channels[2];  //brillo
             Image<Gray, byte> huefilter = ch0.InRange(new Gray(_minHue), new Gray(_maxHue));
@@ -221,30 +213,24 @@ namespace Prueba_de_stream
             Image<Gray, byte> brightnessFilter = ch2.InRange(new Gray(_minBrig), new Gray(_maxBrig));
             Image<Gray, byte> result2 = huefilter.And(saturfilter);
             Image<Gray, byte> result3 = result2.And(brightnessFilter);
-            //currentFrame = huefilter;
 
-            var currentFrame2 = currentFrame.And(result3);
-            //currentFrame = result3.Copy(result3);
+            var currentFrameWithFilters = result3;
 
-            //currentFrame2 = currentFrame2.Canny(80,150);
 
-            var copyCurrent = currentFrame2.Copy(currentFrame2);
 
-            Mat rect_12 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(_minSqrMax, _minSqrMax), new System.Drawing.Point(_minSqrMax / 2, _minSqrMax / 2));
-            Mat rect_6 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(_minSqrMin, _minSqrMin), new System.Drawing.Point(_minSqrMin / 2, _minSqrMin / 2));
-            CvInvoke.Erode(currentFrame2, currentFrame2, rect_12, new System.Drawing.Point(1, 1), 1, BorderType.Default, new MCvScalar(0, 0, 0));
+            //Mat rect_12 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(_minSqrMax, _minSqrMax), new System.Drawing.Point(_minSqrMax / 2, _minSqrMax / 2));
+            //Mat rect_6 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(_minSqrMin, _minSqrMin), new System.Drawing.Point(_minSqrMin / 2, _minSqrMin / 2));
+            //CvInvoke.Erode(currentFrame2, currentFrame2, rect_12, new System.Drawing.Point(1, 1), 1, BorderType.Default, new MCvScalar(0, 0, 0));
+            //CvInvoke.Dilate(currentFrame2, currentFrame2, rect_6, new System.Drawing.Point(1, 1), 2, BorderType.Default, new MCvScalar(0, 0, 0));
 
-            currentFrame2 = copyCurrent.And(currentFrame2);
 
-            CvInvoke.Dilate(currentFrame2, currentFrame2, rect_6, new System.Drawing.Point(1, 1), 2, BorderType.Default, new MCvScalar(0, 0, 0));
-
-            DisplayImage(currentFrame, currentFrame2);
+            DisplayImage(currentFrame, currentFrameWithFilters);
 
             using (Mat modelImage = processFrame.Mat)
-            using (Mat observedImage = currentFrame2.Mat)
+            using (Mat observedImage = currentFrame.Mat)
             {
                 Mat result = DrawMatches.Draw(modelImage, observedImage, out matchTime);
-                var resultFrame = result.ToImage<Bgr, Byte>();
+                var resultFrame = result.ToImage<Hsv, Byte>();
                 DisplayResult(resultFrame, matchTime);
             }
         }
@@ -266,7 +252,7 @@ namespace Prueba_de_stream
 
         //    return skin;
         //}
-        private void DisplayResult(Image<Bgr, Byte> resultFrame, long matchTime)
+        private void DisplayResult(Image<Hsv, Byte> resultFrame, long matchTime)
         {
             Dispatcher.Invoke(new Action(() =>
             {
@@ -275,7 +261,7 @@ namespace Prueba_de_stream
             }));
         }
 
-        private void DisplayImage(Image<Gray, Byte> currentFrame, Image<Gray, Byte> processFrame)
+        private void DisplayImage(Image<Hsv, Byte> currentFrame, Image<Gray, Byte> processFrame)
         {
             Dispatcher.Invoke(new Action(() =>
             {
