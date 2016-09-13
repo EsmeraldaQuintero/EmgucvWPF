@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Prueba_de_stream"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="1200">
+        Title="MainWindow" Height="600" Width="1300">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -26,29 +26,142 @@
         <TextBlock Name="MatchTimeText"
                    Grid.Row="0"
                    Grid.Column="1"
-                   Grid.ColumnSpan="2"
         />
-        <Image x:Name="sourceImage"
+        <Grid Name="Sliders"
+              Grid.Row="0"
+              Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Slider Name="HueSlider1"
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    IsEnabled="True"
+                    Maximum="128"
+                    Minimum="0"
+                    Value="{Binding Hue1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+            <Slider Name="HueSlider2"
+                    Grid.Column="1"
+                    Grid.Row="0"
+                    Maximum="128"
+                    Minimum="0"
+                    Value="{Binding Hue2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+
+            <Slider Name="SatSlider1"
+                    Grid.Column="0"
+                    Grid.Row="1"
+                    IsEnabled="True"
+                    Maximum="128"
+                    Minimum="0"
+                    Value="{Binding Sat1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+            <Slider Name="SatSlider2"
+                    Grid.Column="1"
+                    Grid.Row="1"
+                    Maximum="128"
+                    Minimum="0"
+                    Value="{Binding Sat2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+
+            <Slider Name="BrigSlider1"
+                    Grid.Column="0"
+                    Grid.Row="2"
+                    IsEnabled="True"
+                    Maximum="128"
+                    Minimum="0"
+                    Value="{Binding Brig1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+            <Slider Name="BrigSlider2"
+                    Grid.Column="1"
+                    Grid.Row="2"
+                    Maximum="128"
+                    Minimum="0"
+                    Value="{Binding Brig2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+
+            <Slider Name="erodeSlider1"
+                    Grid.Column="0"
+                    Grid.Row="3"
+                    Maximum="20"
+                    Minimum="2"
+                    Value="{Binding Erode1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+            <Slider Name="erodeSlider2"
+                    Grid.Column="1"
+                    Grid.Row="3"
+                    Maximum="20"
+                    Minimum="2"
+                    Value="{Binding Erode2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+
+            <Slider Name="dilateSlider1"
+                    Grid.Column="0"
+                    Grid.Row="4"
+                    Maximum="20"
+                    Minimum="2"
+                    Value="{Binding Dilate1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+            <Slider Name="dilateSlider2"
+                    Grid.Column="1"
+                    Grid.Row="4"
+                    Maximum="20"
+                    Minimum="2"
+                    Value="{Binding Dilate2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+        </Grid>
+        
+        <Grid Name="ImagesGrid"
+              Grid.Column="0"
+              Grid.ColumnSpan="3"
+              Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <Image x:Name="sourceImage"
                Stretch="Fill"
-               Grid.Row="1"
                Grid.Column="0"
                HorizontalAlignment="Center"
                VerticalAlignment="Center"
-         />
-        <Image x:Name="modelImage"
+            />
+            <Image x:Name="filterImage"
                Stretch="Fill"
-               Grid.Row="1"
                Grid.Column="1"
                HorizontalAlignment="Center"
                VerticalAlignment="Center"
-         />
-        <Image x:Name="resultImage"
+            />
+            <Image x:Name="erodeImage"
                Stretch="Fill"
-               Grid.Row="1"
                Grid.Column="2"
                HorizontalAlignment="Center"
                VerticalAlignment="Center"
+            />
+            <Image x:Name="dilateImage"
+               Stretch="Fill"
+               Grid.Column="3"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+            />
+            <Image x:Name="resultImage"
+               Stretch="Fill"
+               Grid.Column="4"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
          />
-        
+
+        </Grid>
     </Grid>
 </Window>
