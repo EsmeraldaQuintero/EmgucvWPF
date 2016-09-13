@@ -109,14 +109,14 @@
                     Grid.Row="4"
                     Maximum="20"
                     Minimum="2"
-                    Value="{Binding Erode1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    Value="{Binding Dilate1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
             <Slider Name="dilateSlider2"
                     Grid.Column="1"
                     Grid.Row="4"
                     Maximum="20"
                     Minimum="2"
-                    Value="{Binding Erode2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    Value="{Binding Dilate2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
         </Grid>
         

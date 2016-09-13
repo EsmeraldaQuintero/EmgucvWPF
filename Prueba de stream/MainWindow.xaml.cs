@@ -240,7 +240,7 @@ namespace Prueba_de_stream
 
             DisplayImage(currentFrame, currentFrameWithErode, currentFrameWithDilate, subFrame);
 
-            DisplayResult(currentFrameWithDilate.Sub(currentFrameWithErode), 1000);
+            DisplayResult(subFrame, 1000);
 
 
             //using (Mat modelImage = processFrame.Mat)
