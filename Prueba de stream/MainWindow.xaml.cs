@@ -45,7 +45,7 @@ namespace Prueba_de_stream
                 NotifyPropertyChanged();
             }
         }
-        private int _hue1 = 59;
+        private int _hue1 = 63;
         private int _hue2 = 26;
         private int _maxHue = 128;
 
@@ -74,7 +74,7 @@ namespace Prueba_de_stream
             }
         }
         private int _sat1 = 42;
-        private int _sat2 = 43;
+        private int _sat2 = 46;
         private int _maxSat = 128;
 
         public int Brig1
@@ -101,7 +101,7 @@ namespace Prueba_de_stream
                 NotifyPropertyChanged();
             }
         }
-        private int _brig1 = 0;
+        private int _brig1 = 45;
         private int _brig2 = 0;
         private int _maxBrig = 255;
 
@@ -129,7 +129,7 @@ namespace Prueba_de_stream
                 NotifyPropertyChanged();
             }
         }
-        private int _erode1 = 2;
+        private int _erode1 = 4;
         private int _erode2 = 2;
 
         public int Dilate1
@@ -240,16 +240,13 @@ namespace Prueba_de_stream
 
             DisplayImage(currentFrame, currentFrameWithErode, currentFrameWithDilate, subFrame);
 
-            DisplayResult(subFrame, 1000);
-
-
-            //using (Mat modelImage = processFrame.Mat)
-            //using (Mat observedImage = currentFrame.Mat)
-            //{
-            //    Mat result = DrawMatches.Draw(modelImage, observedImage, out matchTime);
-            //    var resultFrame = result.ToImage<Hsv, Byte>();
-            //    DisplayResult(resultFrame, matchTime);
-            //}
+            using (Mat modelImage = processFrame.Mat)
+            using (Mat observedImage = subFrame.Mat)
+            {
+                Mat result = DrawMatches.Draw(modelImage, observedImage, out matchTime);
+                var resultFrame = result.ToImage<Bgr, Byte>();
+                DisplayResult(resultFrame, matchTime);
+            }
         }
 
         private Image<Gray, byte> Morphology(Image<Gray, byte> image, int dilateSize, int erodeSize, bool erode)
@@ -282,7 +279,7 @@ namespace Prueba_de_stream
             return result3;
         }
 
-        private void DisplayResult(Image<Gray, Byte> resultFrame, long matchTime)
+        private void DisplayResult(Image<Bgr, Byte> resultFrame, long matchTime)
         {
             Dispatcher.Invoke(new Action(() =>
             {
