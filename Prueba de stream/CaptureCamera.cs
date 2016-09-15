@@ -70,7 +70,9 @@ namespace Prueba_de_stream
             var currentFrame = (newFrame.ToImage<Bgr, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic)).Convert<Hsv, byte>();
             var processFrame = (newModelFrame.ToImage<Bgr, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic)).Convert<Hsv, byte>();
 
-            var filterFrame = FilterImage(currentFrame);
+            //var filterFrame = FilterImage(currentFrame);
+
+            var filterFrame = SubstracBackground(currentFrame);
 
             using (Mat modelImage = processFrame.Mat)
             using (Mat observedImage = filterFrame.Mat)
@@ -79,6 +81,12 @@ namespace Prueba_de_stream
                 var resultFrame = result.ToImage<Bgr, Byte>();
                 DisplayResult?.Invoke(resultFrame, matchTime);
             }
+        }
+
+        public Image<Gray, byte> SubstracBackground(Image<Hsv, byte> currentFrame)
+        {
+
+            return new Image<Gray, byte>(currentFrame.Size);
         }
 
         public Image<Gray, byte> FilterImage(Image<Hsv, byte> currentFrame)
