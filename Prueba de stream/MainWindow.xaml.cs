@@ -207,7 +207,6 @@ namespace Prueba_de_stream
                 {   //start the capture
                     captureButton.Content = "Stop";
                     _capture.Start();
-                    _capture.Retrieve(backgroundFrame);
                 }
 
                 _captureInProgress = !_captureInProgress;
