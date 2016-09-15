@@ -20,6 +20,7 @@ namespace Prueba_de_stream
     {
         private Capture _capture = null;
         private bool _captureInProgress;
+        Mat backgroundFrame;
 
         public int Hue1
         {
@@ -180,7 +181,7 @@ namespace Prueba_de_stream
             {
                 try
                 {   //Creating the camera capture
-                    //_capture = new Capture("http://192.168.1.65/mjpg/video.mjpg");
+                    //_capture = new Capture("http://192.168.1.99/mjpg/video.mjpg");
                     _capture = new Capture();
                     _capture.ImageGrabbed += ProcessFrame;
                 }
@@ -206,6 +207,7 @@ namespace Prueba_de_stream
                 {   //start the capture
                     captureButton.Content = "Stop";
                     _capture.Start();
+                    _capture.Retrieve(backgroundFrame);
                 }
 
                 _captureInProgress = !_captureInProgress;
@@ -232,8 +234,8 @@ namespace Prueba_de_stream
 
             var currentFrameWithErode = ColorSegmentation(currentFrame, _hue1, _sat1, _brig1);
             var currentFrameWithDilate = ColorSegmentation(currentFrame, _hue2, _sat2, _brig2);
-
-            currentFrameWithErode = Morphology(currentFrameWithErode,_dilate1, _erode1, true);
+            //.SmoothGaussian(7, 7, 34.3, 45.3)
+            currentFrameWithErode = Morphology(currentFrameWithErode, _dilate1, _erode1, true);
             currentFrameWithDilate = Morphology(currentFrameWithDilate, _dilate2, _erode2, false);
 
             var subFrame = currentFrameWithDilate.Sub(currentFrameWithErode);
