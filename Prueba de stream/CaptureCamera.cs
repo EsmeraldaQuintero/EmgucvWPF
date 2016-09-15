@@ -26,6 +26,7 @@ namespace Prueba_de_stream
         {
             CvInvoke.UseOpenCL = false;
             backgroundFrame = new Mat();
+            context = new ContextSurf();
 
             if (_capture == null)   //if camera capture hasn't been created, then created one
             {
@@ -58,34 +59,41 @@ namespace Prueba_de_stream
             int TRAIN_WIDTH = 400;
             int TRAIN_HEIGHT = 300;
 
-            //Mat newFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\Img1.jpg", LoadImageType.Grayscale);
             //originalCurrentFrame._EqualizeHist();      //contraste
             //originalCurrentFrame._GammaCorrect(1.4d);
 
             Mat newFrame = new Mat();
             _capture.Retrieve(newFrame);
+            //Mat newFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\Img1.jpg", LoadImageType.Grayscale);
             Mat newModelFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\Img6.jpg", LoadImageType.Grayscale);
 
             var currentFrame = (newFrame.ToImage<Bgr, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic)).Convert<Hsv, byte>();
             var processFrame = (newModelFrame.ToImage<Bgr, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic)).Convert<Hsv, byte>();
 
-            //var currentFrameWithErode = ColorSegmentation(currentFrame, context.Hue1, context.Sat1, context.Brig1);
-            //var currentFrameWithDilate = ColorSegmentation(currentFrame, context.Hue2, context.Sat2, context.Brig2);
-            ////.SmoothGaussian(7, 7, 34.3, 45.3)
-            //currentFrameWithErode = Morphology(currentFrameWithErode, context.Dilate1, context.Erode1, true);
-            //currentFrameWithDilate = Morphology(currentFrameWithDilate, context.Dilate2, context.Erode2, false);
+            var filterFrame = FilterImage(currentFrame);
 
-            //var subFrame = currentFrameWithDilate.Sub(currentFrameWithErode);
+            using (Mat modelImage = processFrame.Mat)
+            using (Mat observedImage = filterFrame.Mat)
+            {
+                Mat result = DrawMatches.Draw(modelImage, observedImage, out matchTime);
+                var resultFrame = result.ToImage<Bgr, Byte>();
+                DisplayResult?.Invoke(resultFrame, matchTime);
+            }
+        }
 
-            //DisplayImages?.Invoke(currentFrame, currentFrameWithErode, currentFrameWithDilate, subFrame);
+        public Image<Gray, byte> FilterImage(Image<Hsv, byte> currentFrame)
+        {
+            var currentFrameWithErode = ColorSegmentation(currentFrame, context.Hue1, context.Sat1, context.Brig1);
+            var currentFrameWithDilate = ColorSegmentation(currentFrame, context.Hue2, context.Sat2, context.Brig2);
+            //.SmoothGaussian(7, 7, 34.3, 45.3)
+            currentFrameWithErode = Morphology(currentFrameWithErode, context.Dilate1, context.Erode1, true);
+            currentFrameWithDilate = Morphology(currentFrameWithDilate, context.Dilate2, context.Erode2, false);
 
-            //using (Mat modelImage = processFrame.Mat)
-            //using (Mat observedImage = subFrame.Mat)
-            //{
-            //    Mat result = DrawMatches.Draw(modelImage, observedImage, out matchTime);
-            //    var resultFrame = result.ToImage<Bgr, Byte>();
-            //    DisplayResult?.Invoke(resultFrame, matchTime);
-            //}
+            var subFrame = currentFrameWithDilate.Sub(currentFrameWithErode);
+
+            DisplayImages?.Invoke(currentFrame, currentFrameWithErode, currentFrameWithDilate, subFrame);
+
+            return subFrame;
         }
 
         private Image<Gray, byte> Morphology(Image<Gray, byte> image, int dilateSize, int erodeSize, bool erode)
