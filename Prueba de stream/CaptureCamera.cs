@@ -12,35 +12,51 @@ namespace Prueba_de_stream
 {
     public class CaptureCamera
     {
-        public Capture _capture = null;
-        public ContextSurf context;
-        public Mat backgroundFrame;
+        private Capture _capture;
+        private bool _ready;
 
-        public delegate void DisplayResultEventHandler(Image<Bgr, Byte> resultFrame, long matchTime);
+        public ContextSurf context;
+        private Mat backgroundFrame;
+
+        public delegate void DisplayResultEventHandler(Image<Gray, Byte> resultFrame, long matchTime);
         public event DisplayResultEventHandler DisplayResult;
 
-        public delegate void DisplayImagesEventHandler(Image<Hsv, Byte> currentFrame, Image<Gray, Byte> minFrame, Image<Gray, Byte> maxFrame, Image<Gray, Byte> subFrame);
+        public delegate void DisplayImagesEventHandler(Image<Gray, Byte> currentFrame, Image<Gray, Byte> minFrame, Image<Gray, Byte> maxFrame, Image<Gray, Byte> subFrame);
         public event DisplayImagesEventHandler DisplayImages;
 
         public CaptureCamera()
         {
+            _capture = null;
+            _ready = false;
             CvInvoke.UseOpenCL = false;
-            backgroundFrame = new Mat();
-            context = new ContextSurf();
 
+            //createCapture("http://192.168.1.99/mjpg/video.mjpg");
+            createCapture("");
+
+            backgroundFrame = new Mat();
+            context = new ContextSurf(); 
+        }
+
+        private void createCapture(string path)
+        {
             if (_capture == null)   //if camera capture hasn't been created, then created one
             {
                 try
                 {   //Creating the camera capture
-                    //_capture = new Capture("http://192.168.1.99/mjpg/video.mjpg");
-                    _capture = new Capture();
+                    _capture = path == string.Empty ? new Capture() : new Capture(path);
                     _capture.ImageGrabbed += ProcessFrame;
+                    _ready = true;
                 }
                 catch (NullReferenceException excpt)
                 {   //show errors if there is any
                     MessageBox.Show(excpt.Message);
                 }
             }
+        }
+
+        public bool IsReady()
+        {
+            return _ready;
         }
 
         public void Pause()
@@ -56,37 +72,103 @@ namespace Prueba_de_stream
         private void ProcessFrame(object sender, EventArgs e)
         {
             long matchTime;
-            int TRAIN_WIDTH = 400;
-            int TRAIN_HEIGHT = 300;
-
-            //originalCurrentFrame._EqualizeHist();      //contraste
-            //originalCurrentFrame._GammaCorrect(1.4d);
+            int TRAIN_WIDTH = 512;
+            int TRAIN_HEIGHT = 384;
 
             Mat newFrame = new Mat();
             _capture.Retrieve(newFrame);
-            //Mat newFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\Img1.jpg", LoadImageType.Grayscale);
-            Mat newModelFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\Img6.jpg", LoadImageType.Grayscale);
+            Mat newModelFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\Img1.jpg", LoadImageType.Grayscale);
 
-            var currentFrame = (newFrame.ToImage<Bgr, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic)).Convert<Hsv, byte>();
-            var processFrame = (newModelFrame.ToImage<Bgr, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic)).Convert<Hsv, byte>();
-
+            //var currentFrame = (newFrame.ToImage<Bgr, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic)).Convert<Hsv, byte>();
             //var filterFrame = FilterImage(currentFrame);
+            var originalFrame = newFrame.ToImage<Bgr, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic);
+            var currentFrame = newFrame.ToImage<Ycc, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic);
+            var bgFrame = backgroundFrame.ToImage<Ycc, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic);
+            var filterFrame = SubstracBackground(currentFrame, bgFrame);
 
-            var filterFrame = SubstracBackground(currentFrame);
+            DisplayResult?.Invoke(filterFrame, 1000);
 
-            using (Mat modelImage = processFrame.Mat)
-            using (Mat observedImage = filterFrame.Mat)
-            {
-                Mat result = DrawMatches.Draw(modelImage, observedImage, out matchTime);
-                var resultFrame = result.ToImage<Bgr, Byte>();
-                DisplayResult?.Invoke(resultFrame, matchTime);
-            }
+            //DisplayImages?.Invoke(
+            //    originalFrame,
+            //    bgFrame.Convert<Gray, byte>(),
+            //    currentFrame.Convert<Gray,byte>(),
+            //    filterFrame
+            //    );
+
+            var processFrame = newModelFrame.ToImage<Gray, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic);
+
+            //using (Mat modelImage = processFrame.Mat)
+            //using (Mat observedImage = filterFrame.Mat)
+            //{
+            //    Mat result = DrawMatches.Draw(modelImage, observedImage, out matchTime);
+            //    var resultFrame = result.ToImage<Gray, Byte>();
+            //    DisplayResult?.Invoke(resultFrame, matchTime);
+            //}
         }
 
-        public Image<Gray, byte> SubstracBackground(Image<Hsv, byte> currentFrame)
+        public Image<Gray, byte> SubstracBackground(Image<Ycc, byte> currentFrame, Image<Ycc, byte> bgFrame)
         {
 
-            return new Image<Gray, byte>(currentFrame.Size);
+            var filterFrame = currentFrame.AbsDiff(bgFrame);   //subtract background from image
+
+            Image<Gray, Byte>[] channels1 = currentFrame.Split();
+            Image<Gray, Byte> y1 = channels1[0];
+            Image<Gray, Byte> cb1 = channels1[1];
+            Image<Gray, Byte> cr1 = channels1[2];
+
+            Image<Gray, byte> originFilter = cb1.InRange(new Gray(0), new Gray(68));
+
+
+            // applying filters to remove noise
+            Image<Gray, Byte>[] channels = currentFrame.Split();
+            Image<Gray, Byte> y = channels[0];
+            Image<Gray, Byte> cb = channels[1];
+            Image<Gray, Byte> cr = channels[2];
+            Image<Gray, byte> yfilter = y.InRange(new Gray(context.Hue1), new Gray(context.Hue2));
+            Image<Gray, byte> cbfilter = cb.InRange(new Gray(context.Sat1), new Gray(context.Sat2));
+            Image<Gray, byte> crfilter = cr.InRange(new Gray(context.Brig1), new Gray(context.Brig2));
+
+            ////apply erosion and dilation to get better results .
+            //Image<Gray, byte> res = null;
+
+            ////Eroding the source image using the specified structuring element
+            //Mat rect_12 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(4, 4), new System.Drawing.Point(3, 3));
+            //CvInvoke.Erode(yfilter, yfilter, rect_12, new System.Drawing.Point(1, 1), 1, BorderType.Default, new MCvScalar(0, 0, 0));
+            //CvInvoke.Erode(crfilter, crfilter, rect_12, new System.Drawing.Point(1, 1), 1, BorderType.Default, new MCvScalar(0, 0, 0));
+            //CvInvoke.Erode(cbfilter, cbfilter, rect_12, new System.Drawing.Point(1, 1), 1, BorderType.Default, new MCvScalar(0, 0, 0));
+
+            ////dilating the source image using the specified structuring element
+            //Mat rect_6 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(4, 4), new System.Drawing.Point(3, 3));
+            //CvInvoke.Dilate(yfilter, yfilter, rect_6, new System.Drawing.Point(1, 1), 2, BorderType.Default, new MCvScalar(0, 0, 0));
+            //CvInvoke.Dilate(crfilter, crfilter, rect_6, new System.Drawing.Point(1, 1), 2, BorderType.Default, new MCvScalar(0, 0, 0));
+            //CvInvoke.Dilate(cbfilter, cbfilter, rect_6, new System.Drawing.Point(1, 1), 2, BorderType.Default, new MCvScalar(0, 0, 0));
+
+            //Adding 3 channels
+            //res = yfilter.Add(crfilter, cbfilter);
+            //Image<Ycc, byte> res2;
+            //res2 = res.Convert<Ycc, byte>();
+
+            //adding mask of original ycrcb frame
+            //res2 = res2.And(filterFrame);
+            //CvInvoke.Erode(res2, res2, rect_12, new System.Drawing.Point(3, 3), 1, BorderType.Default, new MCvScalar(0, 0, 0));
+
+
+
+            var mask = cbfilter.Or(yfilter).Or(crfilter);
+
+
+            DisplayImages?.Invoke(
+                originFilter.Convert<Gray, byte>(),
+                yfilter.Convert<Gray, byte>(),
+                cbfilter.Convert<Gray, byte>(),
+                crfilter.Convert<Gray, byte>()
+                );
+
+
+            return mask.Convert<Gray, byte>();
+
+            //return ColorSegmentation(filterFrame.Convert<Hsv, byte>(), context.Hue1, context.Sat1, context.Brig1);
+            //return filterFrame.Convert<Gray,byte>();
         }
 
         public Image<Gray, byte> FilterImage(Image<Hsv, byte> currentFrame)
@@ -99,7 +181,7 @@ namespace Prueba_de_stream
 
             var subFrame = currentFrameWithDilate.Sub(currentFrameWithErode);
 
-            DisplayImages?.Invoke(currentFrame, currentFrameWithErode, currentFrameWithDilate, subFrame);
+            DisplayImages?.Invoke(currentFrame.Convert<Gray,byte>(), currentFrameWithErode, currentFrameWithDilate, subFrame);
 
             return subFrame;
         }

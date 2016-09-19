@@ -30,7 +30,7 @@ namespace Prueba_de_stream
 
         private void captureButtonClick(object sender, EventArgs e)
         {
-            if (captureCamera._capture != null)   //if camera capture has been successfully created
+            if ( captureCamera.IsReady() )   //if camera capture has been successfully created
             {
                 if (_captureInProgress)
                 {  //stop the capture
@@ -47,7 +47,7 @@ namespace Prueba_de_stream
             }
         }
 
-        private void DisplayResult(Image<Bgr, Byte> resultFrame, long matchTime)
+        private void DisplayResult(Image<Gray, byte> resultFrame, long matchTime)
         {
             Dispatcher.Invoke(new Action(() =>
             {
@@ -56,7 +56,7 @@ namespace Prueba_de_stream
             }));
         }
 
-        private void DisplayImage(Image<Hsv, Byte> currentFrame, Image<Gray, Byte> minFrame, Image<Gray, Byte> maxFrame, Image<Gray, Byte> subFrame)
+        private void DisplayImage(Image<Gray, byte> currentFrame, Image<Gray, Byte> minFrame, Image<Gray, Byte> maxFrame, Image<Gray, Byte> subFrame)
         {
             Dispatcher.Invoke(new Action(() =>
             {
