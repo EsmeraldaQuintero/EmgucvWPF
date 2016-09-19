@@ -108,19 +108,18 @@ namespace Prueba_de_stream
 
         public Image<Gray, byte> SubstracBackground(Image<Ycc, byte> currentFrame, Image<Ycc, byte> bgFrame)
         {
-
-            var filterFrame = currentFrame.AbsDiff(bgFrame);   //subtract background from image
-
             Image<Gray, Byte>[] channels1 = currentFrame.Split();
             Image<Gray, Byte> y1 = channels1[0];
             Image<Gray, Byte> cb1 = channels1[1];
             Image<Gray, Byte> cr1 = channels1[2];
-
             Image<Gray, byte> originFilter = cb1.InRange(new Gray(0), new Gray(68));
 
 
+            var filterFrame = currentFrame.Convert<Ycc,byte>().AbsDiff(bgFrame);   //subtract background from image
+
+
             // applying filters to remove noise
-            Image<Gray, Byte>[] channels = currentFrame.Split();
+            Image<Gray, Byte>[] channels = filterFrame.Split();
             Image<Gray, Byte> y = channels[0];
             Image<Gray, Byte> cb = channels[1];
             Image<Gray, Byte> cr = channels[2];
