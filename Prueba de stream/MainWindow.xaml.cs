@@ -25,7 +25,7 @@ namespace Prueba_de_stream
             captureCamera.DisplayResult += DisplayResult;
             DataContext = captureCamera.context;
 
-            captureButton.Content = "Start Capture";
+            CaptureButton.Content = "Start Capture";
         }
 
         private void captureButtonClick(object sender, EventArgs e)
@@ -34,12 +34,12 @@ namespace Prueba_de_stream
             {
                 if (_captureInProgress)
                 {  //stop the capture
-                    captureButton.Content = "Start Capture";
+                    CaptureButton.Content = "Start Capture";
                     captureCamera.Pause();
                 }
                 else
                 {   //start the capture
-                    captureButton.Content = "Stop";
+                    CaptureButton.Content = "Stop";
                     captureCamera.Start();
                 }
 
@@ -47,23 +47,23 @@ namespace Prueba_de_stream
             }
         }
 
-        private void DisplayResult(Image<Gray, byte> resultFrame, long matchTime)
+        private void DisplayResult(Image<Gray, byte> resultImg, long matchTime)
         {
             Dispatcher.Invoke(new Action(() =>
             {
-                resultImage.Source = ToImageSource(resultFrame.Bitmap);
+                ResultImage.Source = ToImageSource(resultImg.Bitmap);
                 MatchTimeText.Text = matchTime.ToString();
             }));
         }
 
-        private void DisplayImage(Image<Gray, byte> currentFrame, Image<Gray, Byte> minFrame, Image<Gray, Byte> maxFrame, Image<Gray, Byte> subFrame)
+        private void DisplayImage(Image<Gray, byte> bgImg, Image<Gray, Byte> bgRemoveImg, Image<Gray, Byte> segmentedImg, Image<Gray, Byte> contourImg)
         {
             Dispatcher.Invoke(new Action(() =>
             {
-                sourceImage.Source = ToImageSource(currentFrame.Bitmap);
-                filterImage.Source = ToImageSource(minFrame.Bitmap);
-                erodeImage.Source = ToImageSource(maxFrame.Bitmap);
-                dilateImage.Source = ToImageSource(subFrame.Bitmap);
+                BackgroundImage.Source = ToImageSource(bgImg.Bitmap);
+                WithoutBackgroundImage.Source = ToImageSource(bgRemoveImg.Bitmap);
+                SegmentedImage.Source = ToImageSource(segmentedImg.Bitmap);
+                ContoursImage.Source = ToImageSource(contourImg.Bitmap);
             }));
         }
 

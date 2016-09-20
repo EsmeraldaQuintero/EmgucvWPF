@@ -10,143 +10,63 @@ namespace Prueba_de_stream
 {
     public class ContextSurf : INotifyPropertyChanged
     {
-        public int Hue1
-        {
-            get
-            {
-                return _hue1;
-            }
-            set
-            {
-                _hue1 = value;
-                NotifyPropertyChanged();
-            }
-        }
-        public int Hue2
-        {
-            get
-            {
-                return _hue2;
-            }
-            set
-            {
-                _hue2 = value;
-                NotifyPropertyChanged();
-            }
-        }
-        private int _hue1 = 63;
-        private int _hue2 = 26;
-        public int MaxHue = 128;
 
-        public int Sat1
+        public int NoiseBG
         {
             get
             {
-                return _sat1;
+                return _noiseBG;
             }
             set
             {
-                _sat1 = value;
+                _noiseBG = value;
                 NotifyPropertyChanged();
             }
         }
-        public int Sat2
-        {
-            get
-            {
-                return _sat2;
-            }
-            set
-            {
-                _sat2 = value;
-                NotifyPropertyChanged();
-            }
-        }
-        private int _sat1 = 42;
-        private int _sat2 = 46;
-        public int MaxSat = 128;
 
-        public int Brig1
+        public int ClarifyBG
         {
             get
             {
-                return _brig1;
+                return _clarifyBG;
             }
             set
             {
-                _brig1 = value;
+                _clarifyBG = value;
                 NotifyPropertyChanged();
             }
         }
-        public int Brig2
-        {
-            get
-            {
-                return _brig2;
-            }
-            set
-            {
-                _brig2 = value;
-                NotifyPropertyChanged();
-            }
-        }
-        private int _brig1 = 45;
-        private int _brig2 = 0;
-        public int MaxBrig = 255;
 
-        public int Erode1
+        public int ErodeBG
         {
             get
             {
-                return _erode1;
+                return _erodeBG;
             }
             set
             {
-                _erode1 = value;
+                _erodeBG = value;
                 NotifyPropertyChanged();
             }
         }
-        public int Erode2
-        {
-            get
-            {
-                return _erode2;
-            }
-            set
-            {
-                _erode2 = value;
-                NotifyPropertyChanged();
-            }
-        }
-        private int _erode1 = 4;
-        private int _erode2 = 2;
 
-        public int Dilate1
+        public int DilateBG
         {
             get
             {
-                return _dilate1;
+                return _dilateBG;
             }
             set
             {
-                _dilate1 = value;
+                _dilateBG = value;
                 NotifyPropertyChanged();
             }
         }
-        public int Dilate2
-        {
-            get
-            {
-                return _dilate2;
-            }
-            set
-            {
-                _dilate2 = value;
-                NotifyPropertyChanged();
-            }
-        }
-        private int _dilate1 = 6;
-        private int _dilate2 = 8;
+
+        private int _noiseBG = 38;
+        private int _clarifyBG = 38;
+        private int _erodeBG = 10;
+        private int _dilateBG = 7;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
