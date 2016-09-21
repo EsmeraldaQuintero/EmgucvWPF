@@ -31,26 +31,37 @@
             <Button     Name="CaptureButton" Grid.Column="0"  Grid.RowSpan="4" Click="captureButtonClick"/>
             <TextBlock  Name="MatchTimeText" Grid.Column="1" Grid.RowSpan="4"/>
 
-            <Slider Name="NoiseBGSilder"
+            <Slider Name="NoiseBGSlider"
                     Grid.Column="2" Grid.Row="0"
-                    Minimum="0" Maximum="255"
+                    Minimum="{Binding MinYCCValue}" Maximum="{Binding MaxYCCValue}"
                     Value="{Binding NoiseBG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
-            <Slider Name="ClarifyBGSilder"
+            <Slider Name="ClarifyBGSlider"
                     Grid.Column="2" Grid.Row="1"
-                    Minimum="0" Maximum="255"
+                    Minimum="{Binding MinYCCValue}" Maximum="{Binding MaxYCCValue}"
                     Value="{Binding ClarifyBG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
-            <Slider Name="ErodeBGSilder"
+            <Slider Name="ErodeBGSlider"
                     Grid.Column="2" Grid.Row="2"
-                    Minimum="0" Maximum="20"
+                    Minimum="{Binding MinMorphologyValue}" Maximum="{Binding MaxMorphologyValue}"
                     Value="{Binding ErodeBG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
-            <Slider Name="DilateBGSilder"
+            <Slider Name="DilateBGSlider"
                     Grid.Column="2" Grid.Row="3"
-                    Minimum="0" Maximum="20"
+                    Minimum="{Binding MinMorphologyValue}" Maximum="{Binding MaxMorphologyValue}"
                     Value="{Binding DilateBG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
+            <Slider Name="MinLimitColorSilder"
+                    Grid.Column="3" Grid.Row="0"
+                    Minimum="{Binding MinHSVValue}" Maximum="{Binding MaxHSVValue}"
+                    Value="{Binding MinColorHSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+            <Slider Name="MaxLimitColorSilder"
+                    Grid.Column="3" Grid.Row="1"
+                    Minimum="{Binding MinHSVValue}" Maximum="{Binding MaxHSVValue}"
+                    Value="{Binding MaxColorHSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+
         </Grid>
 
         <Grid Name="ImagesGrid" Grid.Row="1">

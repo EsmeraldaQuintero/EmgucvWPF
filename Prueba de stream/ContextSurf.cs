@@ -63,10 +63,53 @@ namespace Prueba_de_stream
             }
         }
 
+        public int MinColorHSV
+        {
+            get
+            {
+                return _minColorHSV;
+            }
+            set
+            {
+                _minColorHSV = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public int MaxColorHSV
+        {
+            get
+            {
+                return _maxColorHSV;
+            }
+            set
+            {
+                _maxColorHSV = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public int MinYCCValue => MIN_YCC_VALUE;
+        public int MaxYCCValue => MAX_YCC_VALUE;
+        public int MinMorphologyValue => MIN_MORPHOLOGY_VALUE;
+        public int MaxMorphologyValue => MAX_MORPHOLOGY_VALUE;
+        public int MinHSVValue => MIN_HSV_VALUE;
+        public int MaxHSVValue => MAX_HSV_VALUE;
+
         private int _noiseBG = 38;
         private int _clarifyBG = 38;
         private int _erodeBG = 10;
         private int _dilateBG = 7;
+        private int _minColorHSV = 20;
+        private int _maxColorHSV = 150;
+
+        private const int MIN_YCC_VALUE = 0;
+        private const int MAX_YCC_VALUE = 128;
+        private const int MIN_MORPHOLOGY_VALUE = 2;
+        private const int MAX_MORPHOLOGY_VALUE = 20;
+        private const int MIN_HSV_VALUE = 0;
+        private const int MAX_HSV_VALUE = 359;
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 

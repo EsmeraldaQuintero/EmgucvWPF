@@ -45,3 +45,4 @@ C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba_de_stream.Pr
 C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream.csproj.GenerateResource.Cache
 C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream.exe
 C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream.pdb
+C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream.csprojResolveAssemblyReference.cache

@@ -77,23 +77,32 @@ namespace Prueba_de_stream
             long matchTime = 0;
 
             Mat currentFrame = new Mat();
+            Mat withoutBackgroundFrame = new Mat();
+            Mat segmentedFrame = new Mat();
+
             _capture.Retrieve(currentFrame);
             Mat modelFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\Img1.jpg", LoadImageType.Grayscale);
 
-            Mat withoutBackgroundFrame = BackgroundRemover(backgroundFrame.Clone(), currentFrame.Clone());
-
-            //Mat segmentatedFrame = SegmentationFilter(withoutBackgroundFrame);
-
-            try
+            if( !currentFrame.IsEmpty)
             {
-                var resultFrame = withoutBackgroundFrame.ToImage<Gray, Byte>();
-                DisplayResult?.Invoke(resultFrame, matchTime);
-
+                withoutBackgroundFrame = BackgroundRemover(backgroundFrame, currentFrame);
             }
-            catch { }
 
+            if (!withoutBackgroundFrame.IsEmpty)
+            {
+                segmentedFrame = SegmentationFilter(withoutBackgroundFrame);
+            }
+            
+            if( !segmentedFrame.IsEmpty)
+            {
+                try
+                {
+                    var resultFrame = segmentedFrame.ToImage<Gray, Byte>();
+                    DisplayResult?.Invoke(resultFrame, matchTime);
 
-
+                }
+                catch { }
+            }
 
 
             //var currentFrame = (newFrame.ToImage<Bgr, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic)).Convert<Hsv, byte>();
@@ -110,34 +119,32 @@ namespace Prueba_de_stream
 
         private Mat BackgroundRemover(Mat bgFrame, Mat currentFrame)
         {
+            using (var bgImage = bgFrame.ToImage<Ycc, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic) )
+            using (var currentImage = currentFrame.ToImage<Ycc, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic) )
+            using (var originalImage = currentFrame.ToImage<Hsv, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic))
+            {
+                //Creating mask for remove background
+                Ycc thr = new Ycc(context.ClarifyBG, 0, 0);
+                var clarifyBgImage = bgImage.ThresholdToZero(thr);          //clarify background in order to eliminate black zones
+                var maskBgImage = clarifyBgImage.AbsDiff(currentImage);     //subtract background from image
 
-            var bgImage = bgFrame.ToImage<Ycc, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic);
-            var currentImage = currentFrame.ToImage<Ycc, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic);
+                //Applying filters to remove noise
+                Image<Gray, Byte>[] channels = maskBgImage.Split();
+                Image<Gray, Byte> y = channels[0];
+                var yfilter = y.InRange(new Gray(0), new Gray(context.NoiseBG));
 
-            //Background filter
-            Ycc thr = new Ycc(context.ClarifyBG, 0, 0);
-            bgImage = bgImage.ThresholdToZero(thr);             //clarify background in order to eliminate black zones
-            var filterFrame = bgImage.AbsDiff(currentImage);    //subtract background from image
-            
-            // applying filters to remove noise
-            Image<Gray, Byte>[] channels = filterFrame.Split();
-            Image<Gray, Byte> y = channels[0];
-            var yfilter = y.InRange(new Gray(0), new Gray(context.NoiseBG));
+                //Eroding the source image using the specified structuring element
+                Mat rect_12 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(context.ErodeBG, context.ErodeBG), new System.Drawing.Point(context.ErodeBG / 2, context.ErodeBG / 2));
+                CvInvoke.Erode(yfilter, yfilter, rect_12, new System.Drawing.Point(1, 1), 1, BorderType.Default, new MCvScalar(0, 0, 0));
 
-            //Eroding the source image using the specified structuring element
-            Mat rect_12 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(context.ErodeBG, context.ErodeBG), new System.Drawing.Point(context.ErodeBG/2, context.ErodeBG/2));
-            CvInvoke.Erode(yfilter, yfilter, rect_12, new System.Drawing.Point(1, 1), 1, BorderType.Default, new MCvScalar(0, 0, 0));
+                //dilating the source image using the specified structuring element
+                Mat rect_6 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(context.DilateBG, context.DilateBG), new System.Drawing.Point(context.DilateBG / 2, context.DilateBG / 2));
+                CvInvoke.Dilate(yfilter, yfilter, rect_6, new System.Drawing.Point(1, 1), 2, BorderType.Default, new MCvScalar(0, 0, 0));
 
-            //dilating the source image using the specified structuring element
-            Mat rect_6 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(context.DilateBG, context.DilateBG), new System.Drawing.Point(context.DilateBG/2, context.DilateBG/2));
-            CvInvoke.Dilate(yfilter, yfilter, rect_6, new System.Drawing.Point(1, 1), 2, BorderType.Default, new MCvScalar(0, 0, 0));
-
-            //Applying mask
-            yfilter = yfilter.Not();
-            var originalImage = currentFrame.ToImage<Hsv, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic);
-            var result = originalImage.Copy(yfilter);
-
-            return result.Mat;
+                //Applying mask
+                yfilter = yfilter.Not();
+                return originalImage.Copy(yfilter).Mat;
+            } 
         }
 
         private Mat SegmentationFilter(Mat withoutBackgroundFrame)
@@ -145,45 +152,33 @@ namespace Prueba_de_stream
             Mat smoothFrame = new Mat();
             CvInvoke.GaussianBlur(withoutBackgroundFrame, smoothFrame, new System.Drawing.Size(5, 5), 1.5, 1.5);
             Mat segmentedFrame = new Mat();
-            GetColorPixelMask(smoothFrame, segmentedFrame, 20, 160);
 
+            //GetColorPixelMask(smoothFrame, segmentedFrame, context.MinColorHSV, context.MaxColorHSV);
+            //bool useUMat;
+            //using (InputOutputArray ia = mask.GetInputOutputArray())
+            //    useUMat = ia.IsUMat;
 
-            return segmentedFrame;
+            //using (IImage hsv = useUMat ? (IImage)new UMat() : (IImage)new Mat())
+            //using (IImage s = useUMat ? (IImage)new UMat() : (IImage)new Mat())
+            //{
+            //    CvInvoke.CvtColor(image, hsv, ColorConversion.Bgr2Hsv);
+            //    CvInvoke.ExtractChannel(hsv, mask, 0);
+            //    CvInvoke.ExtractChannel(hsv, s, 1);
+
+            //    //the mask for hue less than 20 or larger than 160
+            //    using (ScalarArray lower = new ScalarArray(min))
+            //    using (ScalarArray upper = new ScalarArray(max))
+            //        CvInvoke.InRange(mask, lower, upper, mask);
+            //    CvInvoke.BitwiseNot(mask, mask);
+
+            //    //s is the mask for saturation of at least 10, this is mainly used to filter out white pixels
+            //    CvInvoke.Threshold(s, s, 10, 255, ThresholdType.Binary);
+            //    CvInvoke.BitwiseAnd(mask, s, mask, null);
+
+            //}
+
+            return smoothFrame;
         }
-
-
-
-        private static void GetColorPixelMask(IInputArray image, IInputOutputArray mask, int min, int max)
-        {
-            bool useUMat;
-            using (InputOutputArray ia = mask.GetInputOutputArray())
-                useUMat = ia.IsUMat;
-
-            using (IImage hsv = useUMat ? (IImage)new UMat() : (IImage)new Mat())
-            using (IImage s = useUMat ? (IImage)new UMat() : (IImage)new Mat())
-            {
-                CvInvoke.CvtColor(image, hsv, ColorConversion.Bgr2Hsv);
-                CvInvoke.ExtractChannel(hsv, mask, 0);
-                CvInvoke.ExtractChannel(hsv, s, 1);
-
-                //the mask for hue less than 20 or larger than 160
-                using (ScalarArray lower = new ScalarArray(min))
-                using (ScalarArray upper = new ScalarArray(max))
-                    CvInvoke.InRange(mask, lower, upper, mask);
-                CvInvoke.BitwiseNot(mask, mask);
-
-                //s is the mask for saturation of at least 10, this is mainly used to filter out white pixels
-                CvInvoke.Threshold(s, s, 10, 255, ThresholdType.Binary);
-                CvInvoke.BitwiseAnd(mask, s, mask, null);
-
-            }
-        }
-
-
-
-
-
-
 
 
 
