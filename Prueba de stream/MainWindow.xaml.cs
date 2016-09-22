@@ -56,7 +56,7 @@ namespace Prueba_de_stream
             }));
         }
 
-        private void DisplayImage(Image<Gray, byte> bgImg, Image<Gray, Byte> bgRemoveImg, Image<Gray, Byte> segmentedImg, Image<Gray, Byte> contourImg)
+        private void DisplayImage(Image<Gray, byte> bgImg, Image<Gray, byte> bgRemoveImg, Image<Gray, byte> segmentedImg, Image<Gray, byte> contourImg)
         {
             Dispatcher.Invoke(new Action(() =>
             {
