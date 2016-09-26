@@ -26,7 +26,6 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <Button     Name="CaptureButton" Grid.Column="0"  Grid.RowSpan="4" Click="captureButtonClick"/>
@@ -52,6 +51,7 @@
                     Minimum="{Binding MinMorphologyValue}" Maximum="{Binding MaxMorphologyValue}"
                     Value="{Binding DilateBG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
+            
             <Slider Name="GaussianBlurSilder"
                     Grid.Column="3" Grid.Row="0"
                     Minimum="{Binding MinGaussianValue}" Maximum="{Binding MaxGaussianValue}"
@@ -62,20 +62,26 @@
                     Minimum="{Binding MinHueValue}" Maximum="{Binding MaxHueValue}"
                     Value="{Binding MinHueForHSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
-            <Slider Name="MaxHueSilder"
-                    Grid.Column="3" Grid.Row="2"
-                    Minimum="{Binding MinHueValue}" Maximum="{Binding MaxHueValue}"
-                    Value="{Binding MaxHueForHSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+
+            <Slider Name="BeyondDilateSilder"
+                    Grid.Column="4" Grid.Row="0"
+                    Minimum="{Binding MinMorphologyValue}" Maximum="{Binding MaxMorphologyValue}"
+                    Value="{Binding BeyondDilate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
-            <Slider Name="MinBrigSilder"
-                    Grid.Column="3" Grid.Row="3"
-                    Minimum="{Binding MinSatBrigValue}" Maximum="{Binding MaxSatBrigValue}"
-                    Value="{Binding MinBrigForHSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            <Slider Name="BeyondErodeSilder"
+                    Grid.Column="4" Grid.Row="1"
+                    Minimum="{Binding MinMorphologyValue}" Maximum="{Binding MaxMorphologyValue}"
+                    Value="{Binding BeyondErode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
-            <Slider Name="MaxBrigSilder"
-                    Grid.Column="3" Grid.Row="4"
-                    Minimum="{Binding MinSatBrigValue}" Maximum="{Binding MaxSatBrigValue}"
-                    Value="{Binding MaxBrigForHSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            <Slider Name="TopDilateSilder"
+                    Grid.Column="4" Grid.Row="2"
+                    Minimum="{Binding MinMorphologyValue}" Maximum="{Binding MaxMorphologyValue}"
+                    Value="{Binding TopDilate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+            <Slider Name="TopErodeSilder"
+                    Grid.Column="4" Grid.Row="3"
+                    Minimum="{Binding MinMorphologyValue}" Maximum="{Binding MaxMorphologyValue}"
+                    Value="{Binding TopErode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
 
         </Grid>
