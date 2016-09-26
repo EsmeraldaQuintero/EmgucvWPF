@@ -76,45 +76,57 @@ namespace Prueba_de_stream
             }
         }
 
-        public int HueForHSV
+        public int MinHueForHSV
         {
             get
             {
-                return _hueForHSV;
+                return _minHueForHSV;
             }
             set
             {
-                _hueForHSV = value;
+                _minHueForHSV = value;
                 NotifyPropertyChanged();
             }
         }
 
-        public int SatForHSV
+        public int MaxHueForHSV
         {
             get
             {
-                return _satForHSV;
+                return _maxHueForHSV;
             }
             set
             {
-                _satForHSV = value;
+                _maxHueForHSV = value;
                 NotifyPropertyChanged();
             }
         }
 
-        public int BrigForHSV
+        public int MinBrigForHSV
         {
             get
             {
-                return _brigForHSV;
+                return _minBrigForHSV;
             }
             set
             {
-                _brigForHSV = value;
+                _minBrigForHSV = value;
                 NotifyPropertyChanged();
             }
         }
-
+        
+        public int MaxBrigForHSV
+        {
+            get
+            {
+                return _maxBrigForHSV;
+            }
+            set
+            {
+                _maxBrigForHSV = value;
+                NotifyPropertyChanged();
+            }
+        }
         public int MinYCCValue => MIN_YCC_VALUE;
         public int MaxYCCValue => MAX_YCC_VALUE;
         public int MinMorphologyValue => MIN_MORPHOLOGY_VALUE;
@@ -132,9 +144,10 @@ namespace Prueba_de_stream
         private int _erodeBG = 10;
         private int _dilateBG = 7;
         private double _gaussianBlurVal = 1.0;
-        private int _hueForHSV = 0;
-        private int _satForHSV = 0;
-        private int _brigForHSV = 0;
+        private int _minHueForHSV = 0;
+        private int _maxHueForHSV = 0;
+        private int _minBrigForHSV = 0;
+        private int _maxBrigForHSV = 0;
 
         private const int MIN_YCC_VALUE = 0;
         private const int MAX_YCC_VALUE = 127;

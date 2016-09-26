@@ -26,6 +26,7 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <Button     Name="CaptureButton" Grid.Column="0"  Grid.RowSpan="4" Click="captureButtonClick"/>
@@ -56,20 +57,25 @@
                     Minimum="{Binding MinGaussianValue}" Maximum="{Binding MaxGaussianValue}"
                     Value="{Binding GaussianBlurVal, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
-            <Slider Name="HueSilder"
+            <Slider Name="MinHueSilder"
                     Grid.Column="3" Grid.Row="1"
-                    Minimum="{Binding MinHueValue}" Maximum="{Binding MaxSatBrigValue}"
-                    Value="{Binding HueForHSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    Minimum="{Binding MinHueValue}" Maximum="{Binding MaxHueValue}"
+                    Value="{Binding MinHueForHSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
-            <Slider Name="SatSilder"
+            <Slider Name="MaxHueSilder"
                     Grid.Column="3" Grid.Row="2"
-                    Minimum="{Binding MinSatBrigValue}" Maximum="{Binding MaxSatBrigValue}"
-                    Value="{Binding SatForHSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    Minimum="{Binding MinHueValue}" Maximum="{Binding MaxHueValue}"
+                    Value="{Binding MaxHueForHSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
-            <Slider Name="BrigSilder"
+            <Slider Name="MinBrigSilder"
                     Grid.Column="3" Grid.Row="3"
                     Minimum="{Binding MinSatBrigValue}" Maximum="{Binding MaxSatBrigValue}"
-                    Value="{Binding BrigForHSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    Value="{Binding MinBrigForHSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </Slider>
+            <Slider Name="MaxBrigSilder"
+                    Grid.Column="3" Grid.Row="4"
+                    Minimum="{Binding MinSatBrigValue}" Maximum="{Binding MaxSatBrigValue}"
+                    Value="{Binding MaxBrigForHSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
 
         </Grid>
