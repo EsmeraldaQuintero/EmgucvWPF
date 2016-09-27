@@ -134,17 +134,6 @@ namespace Prueba_de_stream
                 }
             }
 
-
-            //var currentFrame = (newFrame.ToImage<Bgr, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic)).Convert<Hsv, byte>();
-            //var filterFrame = FilterImage(currentFrame);
-
-            //using (Mat modelImage = processFrame.Mat)
-            //using (Mat observedImage = filterFrame.Mat)
-            //{
-            //    Mat result = DrawMatches.Draw(modelImage, observedImage, out matchTime);
-            //    var resultFrame = result.ToImage<Gray, Byte>();
-            //    DisplayResult?.Invoke(resultFrame, matchTime);
-            //}
         }
 
         private Mat BackgroundRemover(Mat bgFrame, Mat currentFrame)
@@ -167,13 +156,10 @@ namespace Prueba_de_stream
                     Image<Gray, Byte> y = channels[0];
                     var yfilter = y.InRange(new Gray(0), new Gray(context.NoiseBG));
 
-                    //Eroding the source image using the specified structuring element
-                    Mat rect_12 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(context.ErodeBG, context.ErodeBG), new System.Drawing.Point(context.ErodeBG / 2, context.ErodeBG / 2));
-                    CvInvoke.Erode(yfilter, yfilter, rect_12, new System.Drawing.Point(1, 1), 1, BorderType.Default, new MCvScalar(0, 0, 0));
-
-                    //Dilating the source image using the specified structuring element
-                    Mat rect_6 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(context.DilateBG, context.DilateBG), new System.Drawing.Point(context.DilateBG / 2, context.DilateBG / 2));
-                    CvInvoke.Dilate(yfilter, yfilter, rect_6, new System.Drawing.Point(1, 1), 2, BorderType.Default, new MCvScalar(0, 0, 0));
+                    //Eroding and Dilating the source image using the specified structuring element
+                    Mat filter = new Mat();
+                    filter = ErodeImage(yfilter.Mat, context.ErodeBG);
+                    filter = DilateImage(filter, context.DilateBG);
 
                     //Applying mask
                     Mat mask = new Mat();
@@ -200,16 +186,14 @@ namespace Prueba_de_stream
 
                 //Selecting color range for the mask
                 Image<Gray, byte> huefilter = ch0.InRange(new Gray(context.MinHueForHSV), new Gray(context.MaxHueForHSV)).Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic);
+
+                //Creating mask
                 Mat mask = new Mat();
-                CvInvoke.CvtColor(huefilter.Mat, mask, ColorConversion.Gray2Bgr);
+                mask = DilateImage(huefilter.Mat, context.BeyondDilate);
+                mask = ErodeImage(mask, context.BeyondErode);
+                CvInvoke.CvtColor(mask, mask, ColorConversion.Gray2Bgr);
                 CvInvoke.CvtColor(mask, mask, ColorConversion.Bgr2Gray);
-
-                Mat mask2 = new Mat();
-                mask2 = DilateImage(mask, context.BeyondDilate);
-                mask2 = ErodeImage(mask2, context.BeyondErode);
-
-
-                return mask2;
+                return mask;
             }
         }
 
