@@ -80,6 +80,7 @@ namespace Prueba_de_stream
             Mat currentFrame = new Mat();
             Mat withoutBackgroundMask = new Mat();
             Mat segmentedMask = new Mat();
+            Mat maskAnd = new Mat();
             Mat filterMask = new Mat();
 
             _capture.Retrieve(currentFrame);
@@ -97,25 +98,63 @@ namespace Prueba_de_stream
             
             if( !segmentedMask.IsEmpty )
             {
-                Mat mask = new Mat();
-                segmentedMask.CopyTo(mask, withoutBackgroundMask);
-                filterMask = MorphologyFilter(mask);
+                segmentedMask.CopyTo(maskAnd, withoutBackgroundMask);
+                filterMask = MorphologyFilter(maskAnd);
             }
 
             if ( !filterMask.IsEmpty )
             {
 
-                Image<Gray, byte> resultFrame = null;
+                Image<Gray, byte> img1 = null;
+                Image<Gray, byte> img2 = null;
+                Image<Gray, byte> img3 = null;
+                Image<Gray, byte> img4 = null;
+                Image<Gray, byte> img5 = null;
+
                 try
                 {
-                    resultFrame = filterMask.ToImage<Gray, byte>();
-                    DisplayResult?.Invoke(resultFrame, 2000);
+                    img1 = currentFrame.ToImage<Gray, byte>();
+                    img2 = withoutBackgroundMask.ToImage<Gray, byte>();
+                    img3 = segmentedMask.ToImage<Gray, byte>();
+                    img4 = maskAnd.ToImage<Gray, byte>();
+
+                    Mat x = new Mat();
+                    Mat y = new Mat();
+                    Mat z = new Mat();
+                    CvInvoke.CvtColor(currentFrame, x, ColorConversion.Bgr2Gray);
+                    CvInvoke.CvtColor(maskAnd, y, ColorConversion.Gray2Bgr);
+                    CvInvoke.CvtColor(y, y, ColorConversion.Bgr2Gray);
+
+                    var xImg = x.Clone().ToImage<Gray, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic);
+                    var yImg = y.Clone().ToImage<Gray, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic);
+                    Image<Gray, byte> zImg = xImg.And(yImg);
+
+                    Mat rr = zImg.Mat;
+
+                    Mat rrr = ErodeImage(rr,context.TopErode);
+
+                    img5 = rrr.ToImage<Gray, byte>();
+
+                    img5 = zImg.Sub(img5);
+
+
+
+                    DisplayImages?.Invoke(img1, img2, img3, img4);
+                    DisplayResult?.Invoke(img5,100);
                 }
 
                 finally
                 {
-                    if (resultFrame != null)
-                        ((IDisposable)resultFrame).Dispose();
+                    if (img1 != null)
+                        ((IDisposable)img1).Dispose();
+                    if (img2 != null)
+                        ((IDisposable)img2).Dispose();
+                    if (img3 != null)
+                        ((IDisposable)img3).Dispose();
+                    if (img4 != null)
+                        ((IDisposable)img4).Dispose();
+                    if (img5 != null)
+                        ((IDisposable)img5).Dispose();
                 }
             }
 
@@ -188,36 +227,45 @@ namespace Prueba_de_stream
                 Mat mask = new Mat();
                 CvInvoke.CvtColor(huefilter.Mat, mask, ColorConversion.Gray2Bgr);
                 CvInvoke.CvtColor(mask, mask, ColorConversion.Bgr2Gray);
-                return mask;
+
+                Mat mask2 = new Mat();
+                mask2 = DilateImage(mask, context.BeyondDilate);
+                mask2 = ErodeImage(mask2, context.BeyondErode);
+
+
+                return mask2;
             }
         }
 
-        public Mat MorphologyFilter(Mat filterMask)
+        private Mat MorphologyFilter(Mat filterMask)
         {
             Mat beyondMask = new Mat();
             Mat topMask = new Mat();
 
-            beyondMask = Morphology(filterMask, context.BeyondDilate, context.BeyondErode, true);
-            topMask = Morphology(filterMask, context.TopDilate, context.TopErode, false);
+            beyondMask = DilateImage(filterMask, context.BeyondDilate);
+            beyondMask = ErodeImage(beyondMask, context.BeyondErode);
+            topMask = DilateImage(filterMask, context.TopDilate);
 
-            var img1 = beyondMask.ToImage<Gray, byte>();
-            var img2 = topMask.ToImage<Gray, byte>();
+            Mat contoursFrame = new Mat();
+            CvInvoke.Subtract(topMask, beyondMask,contoursFrame,null,DepthType.Default);
 
-            return img2.Sub(img1).Mat;
+            return contoursFrame;
         }
 
-        private Mat Morphology(Mat image, int dilateSize, int erodeSize, bool erode)
+        private Mat ErodeImage(Mat frame,int erodeSize)
         {
-            Mat result = new Mat();
-            Mat rec_Erode = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(erodeSize, erodeSize), new System.Drawing.Point(erodeSize / 2, erodeSize / 2));
-            Mat rec_Dilate = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(dilateSize, dilateSize), new System.Drawing.Point(dilateSize / 2, dilateSize / 2));
+            Mat erodeFrame = new Mat();
+            Mat rect_12 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(erodeSize, erodeSize), new System.Drawing.Point(erodeSize / 2, erodeSize / 2));
+            CvInvoke.Erode(frame, erodeFrame, rect_12, new System.Drawing.Point(1, 1), 1, BorderType.Default, new MCvScalar(0, 0, 0));
+            return erodeFrame;
+        }
 
-            CvInvoke.Dilate(image, result, rec_Dilate, new System.Drawing.Point(1, 1), 2, BorderType.Default, new MCvScalar(0, 0, 0));
-            if (erode)
-            {
-                CvInvoke.Erode(result, result, rec_Erode, new System.Drawing.Point(1, 1), 1, BorderType.Default, new MCvScalar(0, 0, 0));
-            }
-            return result;
+        private Mat DilateImage(Mat frame, int dilateSize)
+        {
+            Mat dilateFrame = new Mat();
+            Mat rect_6 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(dilateSize, dilateSize), new System.Drawing.Point(dilateSize / 2, dilateSize / 2));
+            CvInvoke.Dilate(frame, dilateFrame, rect_6, new System.Drawing.Point(1, 1), 2, BorderType.Default, new MCvScalar(0, 0, 0));
+            return dilateFrame;
         }
 
 
