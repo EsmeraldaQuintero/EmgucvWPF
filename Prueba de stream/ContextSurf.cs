@@ -10,7 +10,16 @@ namespace Prueba_de_stream
 {
     public class ContextSurf : INotifyPropertyChanged
     {
-#region Public variables
+        static readonly ContextSurf instance = new ContextSurf();
+        public static ContextSurf Instance
+        {
+            get
+            {
+                return instance;
+            }
+        }
+
+        #region Public variables
         public int NoiseBG
         {
             get
@@ -138,7 +147,7 @@ namespace Prueba_de_stream
         }
         #endregion
 
-#region Private variables
+        #region Private variables
         private int _noiseBG = 38;
         private int _clarifyBG = 38;
         private int _erodeBG = 10;
@@ -149,9 +158,9 @@ namespace Prueba_de_stream
         private int _beyondDilate = 2;
         private int _beyondErode = 2;
         private int _topErode = 2;
-#endregion
+        #endregion
 
-#region Public constants
+        #region Public constants
         public int MinYCCValue => MIN_YCC_VALUE;
         public int MaxYCCValue => MAX_YCC_VALUE;
         public int MinMorphologyValue => MIN_MORPHOLOGY_VALUE;
@@ -160,9 +169,12 @@ namespace Prueba_de_stream
         public double MaxGaussianValue => MAX_GAUSSIANBLUR_VALUE;
         public int MinHueValue => MIN_HUE_VALUE;
         public int MaxHueValue => MAX_HUE_VALUE;
+        public int TrainWidth => TRAIN_WIDTH;
+        public int TrainHeight => TRAIN_HEIGHT;
+        public int RadiusGussianBlur => RADIUS_GAUSSIANBLUR;
         #endregion
 
-#region Private constants
+        #region Private constants
         private const int MIN_YCC_VALUE = 0;
         private const int MAX_YCC_VALUE = 127;
         private const int MIN_MORPHOLOGY_VALUE = 2;
@@ -172,9 +184,15 @@ namespace Prueba_de_stream
         private const int MIN_HUE_VALUE = 0;
         private const int HUE_STEP = 15;
         private const int MAX_HUE_VALUE = 179 - HUE_STEP;
+        private const int TRAIN_WIDTH = 512;
+        private const int TRAIN_HEIGHT = 384;
+        private const int RADIUS_GAUSSIANBLUR = 5;
         #endregion
 
-#region Maybe One Day We Will Use These
+        #region Maybe One Day We Will Use These
+
+        public string DirPath = "C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream";
+
         public int TopDilate
         {
             get

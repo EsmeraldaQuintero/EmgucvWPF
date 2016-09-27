@@ -5,14 +5,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Odasoft.Biometrico.WeaponRecognition.Algorithms
+namespace Prueba_de_stream
 {
     public class EmguCvSurfLibrary
     {
         private static List<Image<Gray, byte>> weaponImages;
-        private const string DirPath = "C:\\odafolders\\WeaponImages";
-        private const int TRAIN_WIDTH = 800;
-        private const int TRAIN_HEIGHT = 600;
 
         private static IEnumerable<string> GetImagesPathsFromDirectory(string dirPath)
         {
@@ -23,9 +20,9 @@ namespace Odasoft.Biometrico.WeaponRecognition.Algorithms
             return null;
         }
 
-        private static void LoadImagesDataSetCPU()
+        private static void LoadImagesDataSetCPU(string dirPath, int width, int height)
         {
-            IEnumerable<string> imagepaths = GetImagesPathsFromDirectory(DirPath);
+            IEnumerable<string> imagepaths = GetImagesPathsFromDirectory(dirPath);
             weaponImages = new List<Image<Gray, byte>>();
 
             if (imagepaths != null)
@@ -34,16 +31,16 @@ namespace Odasoft.Biometrico.WeaponRecognition.Algorithms
                 {
                     using (Image<Gray, byte> source = new Image<Gray, byte>(imagepath))
                     {
-                        Image<Gray, byte> img = source.Copy().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic);
+                        Image<Gray, byte> img = source.Copy().Resize(width, height, Emgu.CV.CvEnum.Inter.Cubic);
                         weaponImages.Add(img);
                     }
                 }
             }
         }
 
-        public static List<Image<Gray, Byte>> GetWeaponImages()
+        public static List<Image<Gray, Byte>> GetWeaponImages(string dirPath, int widthImg, int heightImg)
         {
-            LoadImagesDataSetCPU();
+            LoadImagesDataSetCPU(dirPath, widthImg, heightImg);
             return weaponImages;
         }
     }

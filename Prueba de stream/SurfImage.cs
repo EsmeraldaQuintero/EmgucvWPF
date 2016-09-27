@@ -1,7 +1,7 @@
 ﻿using Emgu.CV;
 using Emgu.CV.Util;
 
-namespace Odasoft.Biometrico.WeaponRecognition.Entities
+namespace Prueba_de_stream
 {
     public class SurfImage
     {

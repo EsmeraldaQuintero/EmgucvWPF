@@ -4,13 +4,12 @@ using Emgu.CV.Features2D;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using Emgu.CV.XFeatures2D;
-using Odasoft.Biometrico.WeaponRecognition.Entities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 
-namespace Odasoft.Biometrico.WeaponRecognition.Algorithms
+namespace Prueba_de_stream
 {
     public class WeaponRecognizer
     {
@@ -21,9 +20,9 @@ namespace Odasoft.Biometrico.WeaponRecognition.Algorithms
         private const double scaleIncrement = 1.5;
         private const int rotationBins = 20;
 
-        public WeaponRecognizer()
+        public WeaponRecognizer(string dirPath, int widthImg, int heightImg)
         {
-            weaponsTrained = EmguCvSurfLibrary.GetWeaponImages();
+            weaponsTrained = EmguCvSurfLibrary.GetWeaponImages(dirPath, widthImg, heightImg);
         }
 
         public bool ProcessFrame(Bitmap image)

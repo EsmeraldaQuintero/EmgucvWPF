@@ -1,26 +1,18 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Media.Imaging;
-using System.Drawing;
-using System.IO;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV;
-using System.Windows.Threading;
 
 namespace Prueba_de_stream
 {
     public class CaptureCamera
     {
+        public ContextSurf context;
+        private ImagePreProcessorAlgorithms processor;
+
         private Capture _capture;
         private bool _ready;
-
-        public ContextSurf context;
-        private Mat backgroundFrame;
-        private const int TRAIN_WIDTH = 512;
-        private const int TRAIN_HEIGHT = 384;
-        private const int RADIUS_GAUSSIANBLUR = 5;
-
 
         public delegate void DisplayResultEventHandler(Image<Gray, byte> resultFrame, long matchTime);
         public event DisplayResultEventHandler DisplayResult;
@@ -36,9 +28,8 @@ namespace Prueba_de_stream
 
             //createCapture("http://192.168.1.99/mjpg/video.mjpg");
             createCapture("");
-
-            backgroundFrame = new Mat();
-            context = new ContextSurf();
+            context = ContextSurf.Instance;
+            processor = new ImagePreProcessorAlgorithms();
         }
 
         private void createCapture(string path)
@@ -70,7 +61,7 @@ namespace Prueba_de_stream
         public void Start()
         {
             _capture.Start();
-            _capture.Retrieve(backgroundFrame);
+            _capture.Retrieve(processor.backgroundFrame);
         }
 
         private void ProcessFrame(object sender, EventArgs e)
@@ -84,22 +75,22 @@ namespace Prueba_de_stream
             Mat filterMask = new Mat();
 
             _capture.Retrieve(currentFrame);
-            Mat modelFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\Img1.jpg", LoadImageType.Grayscale);
+            Mat modelFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\book.png", LoadImageType.Grayscale);
 
             if( !currentFrame.IsEmpty )
             {
-                withoutBackgroundMask = BackgroundRemover(backgroundFrame, currentFrame);
+                withoutBackgroundMask = processor.BackgroundRemover(processor.backgroundFrame, currentFrame);
             }
 
             if (!withoutBackgroundMask.IsEmpty )
             {
-                segmentedMask = SegmentationFilter(currentFrame);
+                segmentedMask = processor.SegmentationFilter(currentFrame);
             }
             
             if( !segmentedMask.IsEmpty )
             {
                 segmentedMask.CopyTo(maskAnd, withoutBackgroundMask);
-                filterMask = MorphologyFilter(maskAnd);
+                filterMask = processor.MorphologyFilter(maskAnd);
             }
 
             if ( !filterMask.IsEmpty )
@@ -134,97 +125,17 @@ namespace Prueba_de_stream
                 }
             }
 
-        }
-
-        private Mat BackgroundRemover(Mat bgFrame, Mat currentFrame)
-        {
-            using (Mat bgMat = new Mat())
-            using (Mat currentMat = new Mat())
+            using (Mat modelWeaponImage = w.Mat)                  //Training image
+            using (Mat observedCameraImage = currentFrame.Mat)    //Camera image
             {
-                CvInvoke.CvtColor(bgFrame, bgMat, ColorConversion.Bgr2YCrCb);
-                CvInvoke.CvtColor(currentFrame, currentMat, ColorConversion.Bgr2YCrCb);
-                using (var bgImage = bgMat.ToImage<Ycc, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic))
-                using (var currentImage = currentMat.ToImage<Ycc, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic))
-                { 
-                    //Creating mask for remove background
-                    Ycc thr = new Ycc(context.ClarifyBG, 0, 0);
-                    var clarifyBgImage = bgImage.ThresholdToZero(thr);          //clarify background in order to eliminate black zones
-                    var maskBgImage = clarifyBgImage.AbsDiff(currentImage);     //subtract background from image
-
-                    //Applying filters to remove noise
-                    Image<Gray, Byte>[] channels = maskBgImage.Split();
-                    Image<Gray, Byte> y = channels[0];
-                    var yfilter = y.InRange(new Gray(0), new Gray(context.NoiseBG));
-
-                    //Eroding and Dilating the source image using the specified structuring element
-                    Mat filter = new Mat();
-                    filter = ErodeImage(yfilter.Mat, context.ErodeBG);
-                    filter = DilateImage(filter, context.DilateBG);
-
-                    //Applying mask
-                    Mat mask = new Mat();
-                    CvInvoke.CvtColor(yfilter.Not().Mat, mask, ColorConversion.Gray2Bgr);
-                    CvInvoke.CvtColor(mask, mask, ColorConversion.Bgr2Gray);
-                    return mask;
+                if (SurfProcess(modelWeaponImage, observedCameraImage))
+                {
+                    isWeaponDetected = true;
                 }
             }
-        }
 
-        private Mat SegmentationFilter(Mat withoutBackgroundFrame)
-        {
-            using( Mat smoothFrame = new Mat() )
-            using( Mat hsvFrame = new Mat() )
-            {   
-                //Appliying Gaussian blur for reduce noise on the image
-                System.Drawing.Size pxDiameter = new System.Drawing.Size(RADIUS_GAUSSIANBLUR, RADIUS_GAUSSIANBLUR);
-                CvInvoke.GaussianBlur(withoutBackgroundFrame, smoothFrame, pxDiameter, context.GaussianBlurVal, context.GaussianBlurVal);
-                
-                //Segmenting image in HSV color
-                CvInvoke.CvtColor(smoothFrame, hsvFrame, ColorConversion.Bgr2Hsv);
-                Image<Gray, byte>[] channels = hsvFrame.ToImage<Hsv, byte>().Split();
-                var ch0 = channels[0];  //Hue channel
 
-                //Selecting color range for the mask
-                Image<Gray, byte> huefilter = ch0.InRange(new Gray(context.MinHueForHSV), new Gray(context.MaxHueForHSV)).Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic);
 
-                //Creating mask
-                Mat mask = new Mat();
-                mask = DilateImage(huefilter.Mat, context.BeyondDilate);
-                mask = ErodeImage(mask, context.BeyondErode);
-                CvInvoke.CvtColor(mask, mask, ColorConversion.Gray2Bgr);
-                CvInvoke.CvtColor(mask, mask, ColorConversion.Bgr2Gray);
-                return mask;
-            }
-        }
-
-        private Mat MorphologyFilter(Mat filterMask)
-        {
-            Mat beyondMask = new Mat();
-            Mat topMask = new Mat();
-
-            topMask = filterMask;
-            beyondMask = ErodeImage(filterMask, context.TopErode);
-
-            Mat contoursFrame = new Mat();
-            CvInvoke.Subtract(topMask, beyondMask,contoursFrame,null,DepthType.Default);
-
-            return contoursFrame;
-        }
-
-        private Mat ErodeImage(Mat frame,int erodeSize)
-        {
-            Mat erodeFrame = new Mat();
-            Mat rect_12 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(erodeSize, erodeSize), new System.Drawing.Point(erodeSize / 2, erodeSize / 2));
-            CvInvoke.Erode(frame, erodeFrame, rect_12, new System.Drawing.Point(1, 1), 1, BorderType.Default, new MCvScalar(0, 0, 0));
-            return erodeFrame;
-        }
-
-        private Mat DilateImage(Mat frame, int dilateSize)
-        {
-            Mat dilateFrame = new Mat();
-            Mat rect_6 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(dilateSize, dilateSize), new System.Drawing.Point(dilateSize / 2, dilateSize / 2));
-            CvInvoke.Dilate(frame, dilateFrame, rect_6, new System.Drawing.Point(1, 1), 2, BorderType.Default, new MCvScalar(0, 0, 0));
-            return dilateFrame;
         }
     }
 }
