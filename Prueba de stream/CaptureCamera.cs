@@ -113,34 +113,12 @@ namespace Prueba_de_stream
 
                 try
                 {
-                    img1 = currentFrame.ToImage<Gray, byte>();
-                    img2 = withoutBackgroundMask.ToImage<Gray, byte>();
-                    img3 = segmentedMask.ToImage<Gray, byte>();
-                    img4 = maskAnd.ToImage<Gray, byte>();
-
-                    Mat x = new Mat();
-                    Mat y = new Mat();
-                    Mat z = new Mat();
-                    CvInvoke.CvtColor(currentFrame, x, ColorConversion.Bgr2Gray);
-                    CvInvoke.CvtColor(maskAnd, y, ColorConversion.Gray2Bgr);
-                    CvInvoke.CvtColor(y, y, ColorConversion.Bgr2Gray);
-
-                    var xImg = x.Clone().ToImage<Gray, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic);
-                    var yImg = y.Clone().ToImage<Gray, byte>().Resize(TRAIN_WIDTH, TRAIN_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic);
-                    Image<Gray, byte> zImg = xImg.And(yImg);
-
-                    Mat rr = zImg.Mat;
-
-                    Mat rrr = ErodeImage(rr,context.TopErode);
-
-                    img5 = rrr.ToImage<Gray, byte>();
-
-                    img5 = zImg.Sub(img5);
-
-
+                    img1 = withoutBackgroundMask.ToImage<Gray, byte>();
+                    img2 = segmentedMask.ToImage<Gray, byte>();
+                    img3 = maskAnd.ToImage<Gray, byte>();
+                    img4 = filterMask.ToImage<Gray, byte>();
 
                     DisplayImages?.Invoke(img1, img2, img3, img4);
-                    DisplayResult?.Invoke(img5,100);
                 }
 
                 finally
@@ -153,8 +131,6 @@ namespace Prueba_de_stream
                         ((IDisposable)img3).Dispose();
                     if (img4 != null)
                         ((IDisposable)img4).Dispose();
-                    if (img5 != null)
-                        ((IDisposable)img5).Dispose();
                 }
             }
 
@@ -242,9 +218,8 @@ namespace Prueba_de_stream
             Mat beyondMask = new Mat();
             Mat topMask = new Mat();
 
-            beyondMask = DilateImage(filterMask, context.BeyondDilate);
-            beyondMask = ErodeImage(beyondMask, context.BeyondErode);
-            topMask = DilateImage(filterMask, context.TopDilate);
+            topMask = filterMask;
+            beyondMask = ErodeImage(filterMask, context.TopErode);
 
             Mat contoursFrame = new Mat();
             CvInvoke.Subtract(topMask, beyondMask,contoursFrame,null,DepthType.Default);
@@ -267,95 +242,5 @@ namespace Prueba_de_stream
             CvInvoke.Dilate(frame, dilateFrame, rect_6, new System.Drawing.Point(1, 1), 2, BorderType.Default, new MCvScalar(0, 0, 0));
             return dilateFrame;
         }
-
-
-
-
-        //Mat smoothFrame2 = new Mat();
-        //Mat rainbowFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\Rainbow.jpg", LoadImageType.Unchanged);
-        //CvInvoke.GaussianBlur(rainbowFrame, smoothFrame2, pxDiameter, context.GaussianBlurVal, context.GaussianBlurVal);
-        //Mat hsvFrame2 = new Mat();
-        //CvInvoke.CvtColor(smoothFrame2, hsvFrame2, ColorConversion.Bgr2Hsv);   //Convert to HSV Image
-
-        //Image<Gray, byte>[] channels2 = hsvFrame2.ToImage<Hsv, byte>().Split();
-        //var ch02 = channels2[0];  //Hue
-        //Image<Gray, byte> huefilter2 = ch02.InRange(new Gray(context.MinHueForHSV), new Gray(context.MaxHueForHSV));
-
-        //var img1 = smoothFrame.ToImage<Bgr, byte>();
-        //DisplayImages?.Invoke(
-        //    huefilter.Convert<Gray, byte>(),
-        //    brightnessFilter.Convert<Gray, byte>(),
-        //    mask,
-        //    huefilter2.Convert<Gray, byte>()
-        //    );
-
-
-        //public Image<Gray, byte> SegmentationFilter(Image<Hsv, byte> currentFrame)
-        //{
-        //    var currentFrameWithErode = ColorSegmentation(currentFrame, context.Hue1, context.Sat1, context.Brig1);
-        //    var currentFrameWithDilate = ColorSegmentation(currentFrame, context.Hue2, context.Sat2, context.Brig2);
-        //    //.SmoothGaussian(7, 7, 34.3, 45.3)
-        //    currentFrameWithErode = Morphology(currentFrameWithErode, context.Dilate1, context.Erode1, true);
-        //    currentFrameWithDilate = Morphology(currentFrameWithDilate, context.Dilate2, context.Erode2, false);
-
-        //    var subFrame = currentFrameWithDilate.Sub(currentFrameWithErode);
-
-        //    DisplayImages?.Invoke(currentFrame.Convert<Gray,byte>(), currentFrameWithErode, currentFrameWithDilate, subFrame);
-
-        //    return subFrame;
-        //}
-
-        //private Image<Gray, byte> ColorSegmentation(Image<Hsv, byte> currentFrame, int hue, int sat, int brig)
-        //{
-        //    Image<Gray, byte>[] channels = currentFrame.Split();
-        //    var ch0 = channels[0];  //matiz
-        //    var ch1 = channels[1];  //saturacion
-        //    var ch2 = channels[2];  //brillo
-        //    Image<Gray, byte> huefilter = ch0.InRange(new Gray(hue), new Gray(context.MaxHue));
-        //    Image<Gray, byte> saturfilter = ch1.InRange(new Gray(sat), new Gray(context.MaxSat));
-        //    Image<Gray, byte> brightnessFilter = ch2.InRange(new Gray(brig), new Gray(context.MaxBrig));
-        //    Image<Gray, byte> result2 = huefilter.And(saturfilter);
-        //    Image<Gray, byte> result3 = result2.And(brightnessFilter);
-
-        //    return result3;
-        //}
-
-        //private Image<Gray, byte> Morphology(Image<Gray, byte> image, int dilateSize, int erodeSize, bool erode)
-        //{
-        //    var dilateImage = image.Copy(image);
-
-        //    Mat rec_Erode = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(erodeSize, erodeSize), new System.Drawing.Point(erodeSize / 2, erodeSize / 2));
-        //    Mat rec_Dilate = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(dilateSize, dilateSize), new System.Drawing.Point(dilateSize / 2, dilateSize / 2));
-
-        //    CvInvoke.Dilate(dilateImage, dilateImage, rec_Dilate, new System.Drawing.Point(1, 1), 2, BorderType.Default, new MCvScalar(0, 0, 0));
-        //    if (erode)
-        //    {
-        //        CvInvoke.Erode(dilateImage, dilateImage, rec_Erode, new System.Drawing.Point(1, 1), 1, BorderType.Default, new MCvScalar(0, 0, 0));
-        //    }
-        //    return dilateImage;
-        //}
-
-        //private Mat Segmentation1(Mat smoothFrame)
-        //{
-        //    var hsv = new Image<Hsv, byte>(smoothFrame.Size);
-        //    CvInvoke.CvtColor(smoothFrame, hsv, ColorConversion.Bgr2Hsv);   //Convert to HSV Image
-
-        //    for (var x = 0; x < hsv.Width; x++)
-        //    {
-        //        for (var y = 0; y < hsv.Height; y++)
-        //        {
-        //            if (!((hsv.Data[y, x, 0] == 0) & (hsv.Data[y, x, 2] == 0))) //i.e. if Black
-        //            {
-        //                hsv.Data[y, x, 0] = 100;
-        //                hsv.Data[y, x, 1] = 100;
-        //                hsv.Data[y, x, 2] = 100;
-        //            }
-        //        }
-        //    }
-
-        //    return hsv.Mat;
-        //}
-
-
     }
 }

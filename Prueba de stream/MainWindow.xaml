@@ -62,24 +62,19 @@
                     Minimum="{Binding MinHueValue}" Maximum="{Binding MaxHueValue}"
                     Value="{Binding MinHueForHSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
-
             <Slider Name="BeyondDilateSilder"
-                    Grid.Column="4" Grid.Row="0"
+                    Grid.Column="3" Grid.Row="2"
                     Minimum="{Binding MinMorphologyValue}" Maximum="{Binding MaxMorphologyValue}"
                     Value="{Binding BeyondDilate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
             <Slider Name="BeyondErodeSilder"
-                    Grid.Column="4" Grid.Row="1"
+                    Grid.Column="3" Grid.Row="3"
                     Minimum="{Binding MinMorphologyValue}" Maximum="{Binding MaxMorphologyValue}"
                     Value="{Binding BeyondErode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
-            <Slider Name="TopDilateSilder"
-                    Grid.Column="4" Grid.Row="2"
-                    Minimum="{Binding MinMorphologyValue}" Maximum="{Binding MaxMorphologyValue}"
-                    Value="{Binding TopDilate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-            </Slider>
+            
             <Slider Name="TopErodeSilder"
-                    Grid.Column="4" Grid.Row="3"
+                    Grid.Column="4" Grid.Row="0"
                     Minimum="{Binding MinMorphologyValue}" Maximum="{Binding MaxMorphologyValue}"
                     Value="{Binding TopErode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>

@@ -10,7 +10,7 @@ namespace Prueba_de_stream
 {
     public class ContextSurf : INotifyPropertyChanged
     {
-
+#region Public variables
         public int NoiseBG
         {
             get
@@ -124,19 +124,6 @@ namespace Prueba_de_stream
             }
         }
 
-        public int TopDilate
-        {
-            get
-            {
-                return _topDilate;
-            }
-            set
-            {
-                _topDilate = value;
-                NotifyPropertyChanged();
-            }
-        }
-
         public int TopErode
         {
             get
@@ -149,18 +136,9 @@ namespace Prueba_de_stream
                 NotifyPropertyChanged();
             }
         }
+        #endregion
 
-        public int MinYCCValue => MIN_YCC_VALUE;
-        public int MaxYCCValue => MAX_YCC_VALUE;
-        public int MinMorphologyValue => MIN_MORPHOLOGY_VALUE;
-        public int MaxMorphologyValue => MAX_MORPHOLOGY_VALUE;
-        public double MinGaussianValue => MIN_GAUSSIANBLUR_VALUE;
-        public double MaxGaussianValue => MAX_GAUSSIANBLUR_VALUE;
-        public int MinHueValue => MIN_HUE_VALUE;
-        public int MaxHueValue => MAX_HUE_VALUE;
-        public int MinSatBrigValue => MIN_SAT_BRIG_VALUE;
-        public int MaxSatBrigValue => MAX_SAT_BRIG_VALUE;
-
+#region Private variables
         private int _noiseBG = 38;
         private int _clarifyBG = 38;
         private int _erodeBG = 10;
@@ -170,9 +148,21 @@ namespace Prueba_de_stream
         private int _maxHueForHSV = 0;
         private int _beyondDilate = 2;
         private int _beyondErode = 2;
-        private int _topDilate = 2;
         private int _topErode = 2;
+#endregion
 
+#region Public constants
+        public int MinYCCValue => MIN_YCC_VALUE;
+        public int MaxYCCValue => MAX_YCC_VALUE;
+        public int MinMorphologyValue => MIN_MORPHOLOGY_VALUE;
+        public int MaxMorphologyValue => MAX_MORPHOLOGY_VALUE;
+        public double MinGaussianValue => MIN_GAUSSIANBLUR_VALUE;
+        public double MaxGaussianValue => MAX_GAUSSIANBLUR_VALUE;
+        public int MinHueValue => MIN_HUE_VALUE;
+        public int MaxHueValue => MAX_HUE_VALUE;
+        #endregion
+
+#region Private constants
         private const int MIN_YCC_VALUE = 0;
         private const int MAX_YCC_VALUE = 127;
         private const int MIN_MORPHOLOGY_VALUE = 2;
@@ -181,9 +171,29 @@ namespace Prueba_de_stream
         private const double MAX_GAUSSIANBLUR_VALUE = 10.0;
         private const int MIN_HUE_VALUE = 0;
         private const int HUE_STEP = 15;
-        private const int MAX_HUE_VALUE = 179 - HUE_STEP; 
+        private const int MAX_HUE_VALUE = 179 - HUE_STEP;
+        #endregion
+
+#region Maybe One Day We Will Use These
+        public int TopDilate
+        {
+            get
+            {
+                return _topDilate;
+            }
+            set
+            {
+                _topDilate = value;
+                NotifyPropertyChanged();
+            }
+        }
+        private int _topDilate = 2;
+
+        public int MinSatBrigValue => MIN_SAT_BRIG_VALUE;
+        public int MaxSatBrigValue => MAX_SAT_BRIG_VALUE;
         private const int MIN_SAT_BRIG_VALUE = 0;
         private const int MAX_SAT_BRIG_VALUE = 245;
+#endregion
 
         public event PropertyChangedEventHandler PropertyChanged;
 
