@@ -5,10 +5,10 @@ using Emgu.CV;
 
 namespace Prueba_de_stream
 {
-    public class ImagePreProcessor
+    public class ImagePreProcessorAlgorithms
     {
-        private Mat _backgroundFrame = null;
-        private ContextSurf context = null;
+        private Mat _backgroundFrame;
+        private ContextSurf context;
         public Mat backgroundFrame
         {
             get
@@ -21,7 +21,7 @@ namespace Prueba_de_stream
             }
         }
 
-        public ImagePreProcessor()
+        public ImagePreProcessorAlgorithms()
         {
             this.context = ContextSurf.Instance;
             _backgroundFrame = new Mat();

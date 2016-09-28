@@ -62,7 +62,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ImageProcessor.cs" />
+    <Compile Include="DrawMatches.cs" />
+    <Compile Include="EmguCvSurfLibrary.cs" />
+    <Compile Include="ImagePreProcessorAlgorithms.cs" />
+    <Compile Include="SurfAlgorithm.cs" />
+    <Compile Include="SurfImage.cs" />
+    <Compile Include="WeaponRecognizer.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

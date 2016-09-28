@@ -75,8 +75,6 @@ namespace Prueba_de_stream
             Mat filterMask = new Mat();
 
             _capture.Retrieve(currentFrame);
-            Mat modelFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\book.png", LoadImageType.Grayscale);
-
             if( !currentFrame.IsEmpty )
             {
                 withoutBackgroundMask = processor.BackgroundRemover(processor.backgroundFrame, currentFrame);
@@ -125,17 +123,23 @@ namespace Prueba_de_stream
                 }
             }
 
-            using (Mat modelWeaponImage = w.Mat)                  //Training image
-            using (Mat observedCameraImage = currentFrame.Mat)    //Camera image
+            try
             {
-                if (SurfProcess(modelWeaponImage, observedCameraImage))
-                {
-                    isWeaponDetected = true;
-                }
+                long time;
+                Mat modelFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\book.png", LoadImageType.Grayscale);
+                Mat pepe = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\books2.png", LoadImageType.Grayscale);
+
+
+                Mat result = DrawMatches.Draw(modelFrame, pepe, out time);
+                //string m = SurfAlgorithm.Process(modelFrame, filterMask) ? "Se encontro algo":string.Empty;
+                //if(m != string.Empty)
+                //{
+                //    MessageBox.Show(m);
+                //    System.Threading.Thread.Sleep(1000);
+                //}
             }
-
-
-
+            catch (ArgumentException ae) {}
+            catch (Exception exp1) { }
         }
     }
 }
