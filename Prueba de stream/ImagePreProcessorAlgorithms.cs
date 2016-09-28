@@ -7,38 +7,20 @@ namespace Prueba_de_stream
 {
     public class ImagePreProcessorAlgorithms
     {
-        private Mat _backgroundFrame;
-        private ContextSurf context;
-        public Mat backgroundFrame
-        {
-            get
-            {
-                return _backgroundFrame;
-            }
-            set
-            {
-                _backgroundFrame = value;
-            }
-        }
+        private static ContextSurf context = ContextSurf.Instance;
 
-        public ImagePreProcessorAlgorithms()
-        {
-            this.context = ContextSurf.Instance;
-            _backgroundFrame = new Mat();
-        }
-
-        public Mat ProcessingImage(Mat currentFrame)
+        public static Mat ProcessingImage(Mat currentFrame, Mat backgroundFrame)
         {
             Mat withoutBackgroundMask = new Mat();
             Mat segmentedMask = new Mat();
             Mat maskAnd = new Mat();
             Mat filterMask = new Mat();
 
-            if (_backgroundFrame != null && !_backgroundFrame.IsEmpty)
+            if (backgroundFrame != null && !backgroundFrame.IsEmpty)
             {
                 if (!currentFrame.IsEmpty)
                 {
-                    withoutBackgroundMask = BackgroundRemover(_backgroundFrame, currentFrame);
+                    withoutBackgroundMask = BackgroundRemover(backgroundFrame, currentFrame);
                 }
 
                 if (!withoutBackgroundMask.IsEmpty)
@@ -56,7 +38,7 @@ namespace Prueba_de_stream
             return filterMask.IsEmpty ? currentFrame : filterMask;
         }
 
-        public Mat BackgroundRemover(Mat bgFrame, Mat currentFrame)
+        public static Mat BackgroundRemover(Mat bgFrame, Mat currentFrame)
         {
             using (Mat bgMat = new Mat())
             using (Mat currentMat = new Mat())
@@ -90,7 +72,7 @@ namespace Prueba_de_stream
             }
         }
 
-        public Mat SegmentationFilter(Mat withoutBackgroundFrame)
+        public static Mat SegmentationFilter(Mat withoutBackgroundFrame)
         {
             using (Mat smoothFrame = new Mat())
             using (Mat hsvFrame = new Mat())
@@ -117,7 +99,7 @@ namespace Prueba_de_stream
             }
         }
 
-        public Mat MorphologyFilter(Mat filterMask)
+        public static Mat MorphologyFilter(Mat filterMask)
         {
             Mat beyondMask = new Mat();
             Mat topMask = new Mat();
@@ -131,7 +113,7 @@ namespace Prueba_de_stream
             return contoursFrame;
         }
 
-        private Mat ErodeImage(Mat frame, int erodeSize)
+        private static Mat ErodeImage(Mat frame, int erodeSize)
         {
             Mat erodeFrame = new Mat();
             Mat rect_12 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(erodeSize, erodeSize), new System.Drawing.Point(erodeSize / 2, erodeSize / 2));
@@ -139,7 +121,7 @@ namespace Prueba_de_stream
             return erodeFrame;
         }
 
-        private Mat DilateImage(Mat frame, int dilateSize)
+        private static Mat DilateImage(Mat frame, int dilateSize)
         {
             Mat dilateFrame = new Mat();
             Mat rect_6 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(dilateSize, dilateSize), new System.Drawing.Point(dilateSize / 2, dilateSize / 2));

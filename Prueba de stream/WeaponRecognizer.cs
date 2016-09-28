@@ -14,12 +14,11 @@ namespace Prueba_de_stream
     public class WeaponRecognizer
     {
         private List<Mat> weaponsTrained;
-        private ImagePreProcessorAlgorithms ImagePreProcessor;
+        private Mat backgroundFrame;
 
         public WeaponRecognizer(string dirPath, int widthImg, int heightImg)
         {
             weaponsTrained = EmguCvSurfLibrary.GetWeaponImages(dirPath, widthImg, heightImg);
-            ImagePreProcessor = new ImagePreProcessorAlgorithms();
         }
 
         public bool ProcessFrame(Bitmap image)
@@ -28,7 +27,7 @@ namespace Prueba_de_stream
             long matchTime;                                     //Debug line
             Stopwatch watch = Stopwatch.StartNew();             //Debug line
             Mat sourceFrame = new Image<Gray, Byte>(image).Mat;
-            Mat currentFrame = ImagePreProcessor.ProcessingImage(sourceFrame);
+            Mat currentFrame = ImagePreProcessorAlgorithms.ProcessingImage(sourceFrame, backgroundFrame);
             weaponsTrained.ForEach(w =>
             {
                 using (Mat modelWeaponImage = w)                  //Training image

@@ -9,7 +9,7 @@ namespace Prueba_de_stream
     public class CaptureCamera
     {
         public ContextSurf context;
-        private ImagePreProcessorAlgorithms processor;
+        Mat backgroundFrame;
 
         private Capture _capture;
         private bool _ready;
@@ -29,7 +29,7 @@ namespace Prueba_de_stream
             //createCapture("http://192.168.1.99/mjpg/video.mjpg");
             createCapture("");
             context = ContextSurf.Instance;
-            processor = new ImagePreProcessorAlgorithms();
+            backgroundFrame = new Mat();
         }
 
         private void createCapture(string path)
@@ -61,7 +61,7 @@ namespace Prueba_de_stream
         public void Start()
         {
             _capture.Start();
-            _capture.Retrieve(processor.backgroundFrame);
+            _capture.Retrieve(backgroundFrame);
         }
 
         private void ProcessFrame(object sender, EventArgs e)
@@ -77,18 +77,18 @@ namespace Prueba_de_stream
             _capture.Retrieve(currentFrame);
             if( !currentFrame.IsEmpty )
             {
-                withoutBackgroundMask = processor.BackgroundRemover(processor.backgroundFrame, currentFrame);
+                withoutBackgroundMask = ImagePreProcessorAlgorithms.BackgroundRemover(backgroundFrame, currentFrame);
             }
 
             if (!withoutBackgroundMask.IsEmpty )
             {
-                segmentedMask = processor.SegmentationFilter(currentFrame);
+                segmentedMask = ImagePreProcessorAlgorithms.SegmentationFilter(currentFrame);
             }
             
             if( !segmentedMask.IsEmpty )
             {
                 segmentedMask.CopyTo(maskAnd, withoutBackgroundMask);
-                filterMask = processor.MorphologyFilter(maskAnd);
+                filterMask = ImagePreProcessorAlgorithms.MorphologyFilter(maskAnd);
             }
 
             if ( !filterMask.IsEmpty )
