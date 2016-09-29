@@ -85,9 +85,12 @@ namespace Prueba_de_stream
                 CvInvoke.CvtColor(smoothFrame, hsvFrame, ColorConversion.Bgr2Hsv);
                 Image<Gray, byte>[] channels = hsvFrame.ToImage<Hsv, byte>().Split();
                 var ch0 = channels[0];  //Hue channel
+                var ch2 = channels[2];  //Value channel
 
                 //Selecting color range for the mask
                 Image<Gray, byte> huefilter = ch0.InRange(new Gray(context.MinHueForHSV), new Gray(context.MaxHueForHSV)).Resize(context.TrainWidth, context.TrainHeight, Emgu.CV.CvEnum.Inter.Cubic);
+                Image<Gray, byte> valfilter = ch2.InRange(new Gray(0), new Gray(55)).Resize(context.TrainWidth, context.TrainHeight, Emgu.CV.CvEnum.Inter.Cubic);
+                huefilter = huefilter.Or(valfilter);
 
                 //Creating mask
                 Mat mask = new Mat();

@@ -153,11 +153,11 @@ namespace Prueba_de_stream
         private int _erodeBG = 10;
         private int _dilateBG = 7;
         private double _gaussianBlurVal = 1.0;
-        private int _minHueForHSV = 0;
-        private int _maxHueForHSV = 0;
-        private int _beyondDilate = 2;
+        private int _minHueForHSV = 85;
+        private int _maxHueForHSV = 100;
+        private int _beyondDilate = 5;
         private int _beyondErode = 2;
-        private int _topErode = 2;
+        private int _topErode = 5;
         #endregion
 
         #region Public constants
