@@ -47,7 +47,7 @@ namespace Prueba_de_stream
             }
         }
 
-        private void DisplayResult(Image<Gray, byte> resultImg, long matchTime)
+        private void DisplayResult(Image<Bgr, byte> resultImg, long matchTime)
         {
             Dispatcher.Invoke(new Action(() =>
             {

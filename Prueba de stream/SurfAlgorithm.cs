@@ -5,9 +5,7 @@ using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using Emgu.CV.XFeatures2D;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Prueba_de_stream
@@ -17,7 +15,7 @@ namespace Prueba_de_stream
         private const int K = 2;
         private const int ROTATION_BINS = 20;
         private const int RANSAC_THRESH = 2;
-        private const int MIN_VALID_POINTS_FOR_MATCH = 4;
+        private const int MIN_VALID_MATCHES = 4;
         private const int START_IDX = 0;
         private const int CHANNEL_MONO = 1;
         private const byte NOT_VALID_MATCH_VAL = 0;
@@ -26,7 +24,6 @@ namespace Prueba_de_stream
         private const double HESSIAN_THRESH = 300;
         private const double SCALE_INCREMENT = 1.5;
         private const bool IGNORE_PROVIDED_KEYPOINS = false;
-
 
         public static bool Process(Mat modelWeaponImage, Mat observedCameraImage)
         {
@@ -40,22 +37,34 @@ namespace Prueba_de_stream
             return isMatched;
         }
 
-        private static bool FakeDetector(Mat homography, Size modelWeaponSize, Mat mask)
+        private static bool FakeDetector(Mat homography, Size modelWeaponSize, Mat mask, Mat img)
         {
-            int minSize = 30;
-            int nonZeroCount = CvInvoke.CountNonZero(mask);
-            if (nonZeroCount > 12)
+            bool isValid = true;
+            if (homography == null)
             {
-                Point[] homographyPoints = GetHomographyPoints(modelWeaponSize, homography);
-                if ((homographyPoints[2].X - homographyPoints[0].X) > minSize && (homographyPoints[2].Y - homographyPoints[0].Y) > minSize)
+                isValid = false;
+            }
+
+            Point[] homographyPoints = GetHomographyPoints(modelWeaponSize, homography);
+            foreach (var point in homographyPoints)
+                if (point.X < 0 || point.Y < 0)
+                    isValid = false;
+
+            using (VectorOfPoint vp = new VectorOfPoint(homographyPoints))
+            {
+                CvInvoke.Polylines(img, vp, true, new MCvScalar(255, 0, 0, 255), 5);
+            }
+
+            int minSizeX = 30;
+            int minSizeY = 20;
+            if ((homographyPoints[1].X - homographyPoints[0].X) > minSizeX && (homographyPoints[2].X - homographyPoints[3].X) > minSizeX)
+            {
+                if ( (homographyPoints[3].Y - homographyPoints[0].Y) > minSizeY && (homographyPoints[2].Y - homographyPoints[1].Y) > minSizeY)
                 {
-                    if ((homographyPoints[3].X - homographyPoints[1].X) > minSize && (homographyPoints[1].Y - homographyPoints[3].Y) > minSize)
-                    {
-                        return true;
-                    }
+                    isValid = isValid ? true : false;
                 }
             }
-            return false;
+            return isValid;
         }
 
         private static bool FindMatch(SurfImage modelWeapon, SurfImage observedCamera, VectorOfVectorOfDMatch matches)
@@ -80,7 +89,7 @@ namespace Prueba_de_stream
                 mask = GetMask(matches);
                 homography = GetHomography(modelWeapon, observedCamera, matches, mask);
             }
-            return FakeDetector(homography, modelWeapon.matImage.Size, mask);      //Check if the surfaces are matched
+            return FakeDetector(homography, modelWeapon.matImage.Size, mask,observedCamera.matImage);      //Check if the surfaces are matched
         }
 
         private static Mat GetMask(VectorOfVectorOfDMatch matches)
@@ -109,12 +118,12 @@ namespace Prueba_de_stream
         private static Mat GetHomography(SurfImage modelWeapon, SurfImage observedCamera, VectorOfVectorOfDMatch matches, Mat mask)
         {
             Mat homography = null;
-            int nonZeroCount = CvInvoke.CountNonZero(mask);
-            if (nonZeroCount >= MIN_VALID_POINTS_FOR_MATCH)
+            int nonZeroCountMatches = CvInvoke.CountNonZero(mask);
+            if (nonZeroCountMatches >= (matches.Size - matches.Size/4))
             {
-                nonZeroCount = Features2DToolbox.VoteForSizeAndOrientation(modelWeapon.keyPoints, observedCamera.keyPoints,
+                int nonZeroCountValid = Features2DToolbox.VoteForSizeAndOrientation(modelWeapon.keyPoints, observedCamera.keyPoints,
                    matches, mask, SCALE_INCREMENT, ROTATION_BINS);
-                if (nonZeroCount >= MIN_VALID_POINTS_FOR_MATCH)
+                if (nonZeroCountValid >= MIN_VALID_MATCHES)
                     homography = Features2DToolbox.GetHomographyMatrixFromMatchedFeatures(modelWeapon.keyPoints, observedCamera.keyPoints, matches, mask, RANSAC_THRESH);
             }
             return homography;

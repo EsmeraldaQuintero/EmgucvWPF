@@ -3,9 +3,7 @@ using System.Windows;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV;
-using Emgu.CV.XFeatures2D;
-using Emgu.CV.Features2D;
-using Emgu.CV.Util;
+using System.Collections.Generic;
 
 namespace Prueba_de_stream
 {
@@ -17,7 +15,7 @@ namespace Prueba_de_stream
         private Capture _capture;
         private bool _ready;
 
-        public delegate void DisplayResultEventHandler(Image<Gray, byte> resultFrame, long matchTime);
+        public delegate void DisplayResultEventHandler(Image<Bgr, byte> resultFrame, long matchTime);
         public event DisplayResultEventHandler DisplayResult;
 
         public delegate void DisplayImagesEventHandler(Image<Gray,byte> currentFrame, Image<Gray, byte> minFrame, Image<Gray, byte> maxFrame, Image<Gray, byte> subFrame);
@@ -78,7 +76,10 @@ namespace Prueba_de_stream
             Mat filterMask = new Mat();
 
             _capture.Retrieve(currentFrame);
-            if( !currentFrame.IsEmpty )
+            //currentFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\pepe.jpg", LoadImageType.Grayscale);
+
+
+            if ( !currentFrame.IsEmpty )
             {
                 withoutBackgroundMask = ImagePreProcessorAlgorithms.BackgroundRemover(backgroundFrame, currentFrame);
             }
@@ -131,47 +132,57 @@ namespace Prueba_de_stream
                 long time;
 
                 //Mat pepe = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\books2.png", LoadImageType.Grayscale);
-                Mat modelFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\5.png", LoadImageType.Grayscale);
 
-                fakeHarris(filterMask.ToImage<Gray, float>(), modelFrame);
-                //Mat result = DrawMatches.Draw(modelFrame, filterMask, out time);
-                //string m = SurfAlgorithm.Process(modelFrame, filterMask) ? "Se encontro algo" : string.Empty;
-                //if (m != string.Empty)
+                string path = "C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\2.png";
+                Mat modelFrame = CvInvoke.Imread(path, LoadImageType.Grayscale);
+
+                //List<Mat> listModels = new List<Mat>();
+                //for (int i = 6; i <= 10; i++)
                 //{
-                //    MessageBox.Show(m);
-                //    System.Threading.Thread.Sleep(1000);
+                //    string path = "C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\" + i + ".png";
+                //    Mat modelFrame = CvInvoke.Imread(path, LoadImageType.Grayscale);
+                //    listModels.Add(modelFrame);
                 //}
-                //var resultImg = result.ToImage<Gray, byte>();
-                //DisplayResult?.Invoke(resultImg,100);
+
+                List<Mat> blobList = BlobAlgorithm.SplitImageByROI(filterMask);
+                foreach (var img in blobList)
+                {
+                    Image<Bgr, byte> resultImg = new Image<Bgr, byte>(img.Size);
+                    resultImg = img.ToImage<Bgr, byte>();
+                    DisplayResult?.Invoke(resultImg, 100);
+                    if ( SurfAlgorithm.Process(modelFrame, img) )
+                    {
+                        System.Threading.Thread.Sleep(100);
+                    }  
+                }
+
+                //List<Mat> blobList = BlobAlgorithm.SplitImageByROI(filterMask);
+                //foreach (var img in blobList)
+                //{
+                //    foreach (var model in listModels)
+                //    {
+                //        if (img != null && SurfAlgorithm.Process(model, img))
+                //        {
+                //            //var resultImg = img.ToImage<Bgr, byte>();
+                //            //DisplayResult?.Invoke(resultImg, 1000);
+                //            //break;
+                //        }
+                //    }
+
+                    //    //    //if (m != string.Empty)
+                    //    //    //{
+                    //    //    //    MessageBox.Show(m);
+                    //    //    //    System.Threading.Thread.Sleep(1000);
+                    //    //    //}
+                    //    //    Mat result = DrawMatches.Draw(modelFrame, filterMask, out time);
+                    //    //    var resultImg = result.ToImage<Bgr, byte>();
+                    //    //    DisplayResult?.Invoke(resultImg, 100);
+                    //}
+
             }
             catch (ArgumentException ae) {}
             catch (Exception exp1) { }
         }
 
-        private void fakeHarris(Image<Gray, float> current, Mat model)
-        {
-            var m_CornerImage = new Image<Gray, float>(current.Size);
-            CvInvoke.CornerHarris(current, m_CornerImage, 3, 3, 0.01);
-
-
-
-            Freak freakCPU = new Freak();
-            SurfImage modelWeapon = new SurfImage(current.Mat);
-            SurfImage observedCamera = new SurfImage(model);
-
-
-            //Extract features from the object image and  observed image
-            freakCPU.DetectAndCompute(modelWeapon.matImage, modelWeapon.matImage, modelWeapon.keyPoints,modelWeapon.descriptors,false);
-
-            VectorOfVectorOfDMatch matches = new VectorOfVectorOfDMatch();
-            BFMatcher matcher = new BFMatcher(DistanceType.L2);
-            matcher.Add(modelWeapon.descriptors);
-            matcher.KnnMatch(observedCamera.descriptors, matches, 2, null);
-
-            //// create and show inverted threshold image
-            //var m_ThresholdImage = new Image<Gray, byte>(current.Size);
-            //CvInvoke.Threshold(m_CornerImage, m_ThresholdImage, 0.0001, 255.0, ThresholdType.BinaryInv);
-            //DisplayResult?.Invoke(m_ThresholdImage, 100);
-        }
     }
 }

@@ -14,7 +14,7 @@ namespace Prueba_de_stream
             Mat withoutBackgroundMask = new Mat();
             Mat segmentedMask = new Mat();
             Mat maskAnd = new Mat();
-            Mat filterMask = new Mat();
+            Mat contourMask = new Mat();
 
             if (backgroundFrame != null && !backgroundFrame.IsEmpty)
             {
@@ -31,11 +31,11 @@ namespace Prueba_de_stream
                 if (!segmentedMask.IsEmpty)
                 {
                     segmentedMask.CopyTo(maskAnd, withoutBackgroundMask);
-                    filterMask = MorphologyFilter(maskAnd);
+                    contourMask = MorphologyFilter(maskAnd);
                 }
             }
 
-            return filterMask.IsEmpty ? currentFrame : filterMask;
+            return contourMask.IsEmpty ? currentFrame : contourMask;
         }
 
         public static Mat BackgroundRemover(Mat bgFrame, Mat currentFrame)
