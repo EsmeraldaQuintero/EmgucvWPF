@@ -124,7 +124,6 @@
     <Resource Include="training\books2.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="training\10.PNG" />
     <Resource Include="training\6.PNG" />
     <Resource Include="training\7.PNG" />
     <Resource Include="training\8.PNG" />
@@ -132,6 +131,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="training\5.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="training\1.PNG" />
+    <Resource Include="training\2.PNG" />
+    <Resource Include="training\3.PNG" />
+    <Resource Include="training\4.PNG" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

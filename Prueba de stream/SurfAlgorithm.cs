@@ -39,19 +39,16 @@ namespace Prueba_de_stream
 
         private static bool FakeDetector(Mat homography, Size modelWeaponSize, Mat mask, Mat img)
         {
-            bool isValid = true;
-            if (homography == null)
+            bool isValid = false;
+            if (homography != null)
             {
-                isValid = false;
-            }
-            else
-            {
+                bool isValidPoint = true;
                 Point[] homographyPoints = GetHomographyPoints(modelWeaponSize, homography);
                 foreach (var point in homographyPoints)
                     if (point.X < 0 || point.Y < 0)
-                        isValid = false;
+                        isValidPoint = false;
 
-                if (isValid)
+                if (isValidPoint)
                 {
                     using (VectorOfPoint vp = new VectorOfPoint(homographyPoints))
                     {
@@ -60,13 +57,14 @@ namespace Prueba_de_stream
 
                     int minSizeX = img.Width / 2;
                     int minSizeY = img.Height / 2;
+                    int nonZeroCountMatches = CvInvoke.CountNonZero(mask);
                     if ((homographyPoints[1].X - homographyPoints[0].X) > minSizeX && (homographyPoints[2].X - homographyPoints[3].X) > minSizeX)
                     {
                         if ((homographyPoints[3].Y - homographyPoints[0].Y) > minSizeY && (homographyPoints[2].Y - homographyPoints[1].Y) > minSizeY)
                         {
-                            return true;
+                            isValid = true;
                         }
-                    }
+                    }    
                 }
 
             }

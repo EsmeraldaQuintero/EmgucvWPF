@@ -129,32 +129,38 @@ namespace Prueba_de_stream
             {
                 long time;
 
-                string path = "C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\2.png";
-                Mat modelFrame = CvInvoke.Imread(path, LoadImageType.Grayscale);
-
+                List<Mat> modelList = GetModels();
                 List<Mat> blobList = BlobAlgorithm.SplitImageByROI(filterMask);
+
                 foreach (var img in blobList)
                 {
                     Image<Bgr, byte> resultImg = new Image<Bgr, byte>(img.Size);
                     resultImg = img.ToImage<Bgr, byte>();
                     DisplayResult?.Invoke(resultImg, 100);
-                    try
+                    foreach( var model in modelList)
                     {
-                        if (SurfAlgorithm.Process(modelFrame, img))
+                        if (SurfAlgorithm.Process(model, img))
                         {
                             System.Threading.Thread.Sleep(100);
                         }
                     }
-                    catch (NullReferenceException exp1)
-                    {
-                        System.Threading.Thread.Sleep(2000);
-                    }
-
                 }
 
             }
             catch (ArgumentException ae) {}
         }
 
+        private List<Mat> GetModels()
+        {
+            List<Mat> modelList = new List<Mat>();
+            for (int i = 1; i < 10; i++)
+            {
+                string path = "C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\" + i + ".png";
+                Mat modelFrame = CvInvoke.Imread(path, LoadImageType.Grayscale);
+                if (modelFrame != null && !modelFrame.IsEmpty)
+                    modelList.Add(modelFrame);
+            }
+            return modelList;
+        }
     }
 }
