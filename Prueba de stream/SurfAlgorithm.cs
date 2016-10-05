@@ -44,25 +44,31 @@ namespace Prueba_de_stream
             {
                 isValid = false;
             }
-
-            Point[] homographyPoints = GetHomographyPoints(modelWeaponSize, homography);
-            foreach (var point in homographyPoints)
-                if (point.X < 0 || point.Y < 0)
-                    isValid = false;
-
-            using (VectorOfPoint vp = new VectorOfPoint(homographyPoints))
+            else
             {
-                CvInvoke.Polylines(img, vp, true, new MCvScalar(255, 0, 0, 255), 5);
-            }
+                Point[] homographyPoints = GetHomographyPoints(modelWeaponSize, homography);
+                foreach (var point in homographyPoints)
+                    if (point.X < 0 || point.Y < 0)
+                        isValid = false;
 
-            int minSizeX = 30;
-            int minSizeY = 20;
-            if ((homographyPoints[1].X - homographyPoints[0].X) > minSizeX && (homographyPoints[2].X - homographyPoints[3].X) > minSizeX)
-            {
-                if ( (homographyPoints[3].Y - homographyPoints[0].Y) > minSizeY && (homographyPoints[2].Y - homographyPoints[1].Y) > minSizeY)
+                if (isValid)
                 {
-                    isValid = isValid ? true : false;
+                    using (VectorOfPoint vp = new VectorOfPoint(homographyPoints))
+                    {
+                        CvInvoke.Polylines(img, vp, true, new MCvScalar(255, 0, 0, 255), 5);
+                    }
+
+                    int minSizeX = img.Width / 2;
+                    int minSizeY = img.Height / 2;
+                    if ((homographyPoints[1].X - homographyPoints[0].X) > minSizeX && (homographyPoints[2].X - homographyPoints[3].X) > minSizeX)
+                    {
+                        if ((homographyPoints[3].Y - homographyPoints[0].Y) > minSizeY && (homographyPoints[2].Y - homographyPoints[1].Y) > minSizeY)
+                        {
+                            return true;
+                        }
+                    }
                 }
+
             }
             return isValid;
         }

@@ -78,7 +78,6 @@ namespace Prueba_de_stream
             _capture.Retrieve(currentFrame);
             //currentFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\pepe.jpg", LoadImageType.Grayscale);
 
-
             if ( !currentFrame.IsEmpty )
             {
                 withoutBackgroundMask = ImagePreProcessorAlgorithms.BackgroundRemover(backgroundFrame, currentFrame);
@@ -97,7 +96,6 @@ namespace Prueba_de_stream
 
             if ( !filterMask.IsEmpty )
             {
-
                 Image<Gray, byte> img1 = null;
                 Image<Gray, byte> img2 = null;
                 Image<Gray, byte> img3 = null;
@@ -131,18 +129,8 @@ namespace Prueba_de_stream
             {
                 long time;
 
-                //Mat pepe = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\books2.png", LoadImageType.Grayscale);
-
                 string path = "C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\2.png";
                 Mat modelFrame = CvInvoke.Imread(path, LoadImageType.Grayscale);
-
-                //List<Mat> listModels = new List<Mat>();
-                //for (int i = 6; i <= 10; i++)
-                //{
-                //    string path = "C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\" + i + ".png";
-                //    Mat modelFrame = CvInvoke.Imread(path, LoadImageType.Grayscale);
-                //    listModels.Add(modelFrame);
-                //}
 
                 List<Mat> blobList = BlobAlgorithm.SplitImageByROI(filterMask);
                 foreach (var img in blobList)
@@ -150,38 +138,22 @@ namespace Prueba_de_stream
                     Image<Bgr, byte> resultImg = new Image<Bgr, byte>(img.Size);
                     resultImg = img.ToImage<Bgr, byte>();
                     DisplayResult?.Invoke(resultImg, 100);
-                    if ( SurfAlgorithm.Process(modelFrame, img) )
+                    try
                     {
-                        System.Threading.Thread.Sleep(100);
-                    }  
+                        if (SurfAlgorithm.Process(modelFrame, img))
+                        {
+                            System.Threading.Thread.Sleep(100);
+                        }
+                    }
+                    catch (NullReferenceException exp1)
+                    {
+                        System.Threading.Thread.Sleep(2000);
+                    }
+
                 }
-
-                //List<Mat> blobList = BlobAlgorithm.SplitImageByROI(filterMask);
-                //foreach (var img in blobList)
-                //{
-                //    foreach (var model in listModels)
-                //    {
-                //        if (img != null && SurfAlgorithm.Process(model, img))
-                //        {
-                //            //var resultImg = img.ToImage<Bgr, byte>();
-                //            //DisplayResult?.Invoke(resultImg, 1000);
-                //            //break;
-                //        }
-                //    }
-
-                    //    //    //if (m != string.Empty)
-                    //    //    //{
-                    //    //    //    MessageBox.Show(m);
-                    //    //    //    System.Threading.Thread.Sleep(1000);
-                    //    //    //}
-                    //    //    Mat result = DrawMatches.Draw(modelFrame, filterMask, out time);
-                    //    //    var resultImg = result.ToImage<Bgr, byte>();
-                    //    //    DisplayResult?.Invoke(resultImg, 100);
-                    //}
 
             }
             catch (ArgumentException ae) {}
-            catch (Exception exp1) { }
         }
 
     }
