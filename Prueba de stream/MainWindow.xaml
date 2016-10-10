@@ -32,49 +32,49 @@
             <TextBlock  Name="MatchTimeText" Grid.Column="1" Grid.RowSpan="4"/>
 
             <Slider Name="NoiseBGSlider"
-                    Grid.Column="2" Grid.Row="0"
+                    Grid.Column="2" Grid.Row="0" ToolTip="Filter the image without background's noise"
                     Minimum="{Binding MinYCCValue}" Maximum="{Binding MaxYCCValue}"
                     Value="{Binding NoiseBG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
             <Slider Name="ClarifyBGSlider"
-                    Grid.Column="2" Grid.Row="1"
+                    Grid.Column="2" Grid.Row="1" ToolTip="Clarify the background overlaping"
                     Minimum="{Binding MinYCCValue}" Maximum="{Binding MaxYCCValue}"
                     Value="{Binding ClarifyBG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
             <Slider Name="ErodeBGSlider"
-                    Grid.Column="2" Grid.Row="2"
+                    Grid.Column="2" Grid.Row="2" ToolTip="Magnitute of the erode filter"
                     Minimum="{Binding MinMorphologyValue}" Maximum="{Binding MaxMorphologyValue}"
                     Value="{Binding ErodeBG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
             <Slider Name="DilateBGSlider"
-                    Grid.Column="2" Grid.Row="3"
+                    Grid.Column="2" Grid.Row="3"  ToolTip="Magnitute of the dilate filter"
                     Minimum="{Binding MinMorphologyValue}" Maximum="{Binding MaxMorphologyValue}"
                     Value="{Binding DilateBG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
             
             <Slider Name="GaussianBlurSilder"
-                    Grid.Column="3" Grid.Row="0"
+                    Grid.Column="3" Grid.Row="0" ToolTip="Magnitute of the gaussian filter"
                     Minimum="{Binding MinGaussianValue}" Maximum="{Binding MaxGaussianValue}"
                     Value="{Binding GaussianBlurVal, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
             <Slider Name="MinHueSilder"
-                    Grid.Column="3" Grid.Row="1"
+                    Grid.Column="3" Grid.Row="1" ToolTip="Select color range for the color segmentation"
                     Minimum="{Binding MinHueValue}" Maximum="{Binding MaxHueValue}"
                     Value="{Binding MinHueForHSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
             <Slider Name="BeyondDilateSilder"
-                    Grid.Column="3" Grid.Row="2"
+                    Grid.Column="3" Grid.Row="2"  ToolTip="Magnitute of the dilate filter"
                     Minimum="{Binding MinMorphologyValue}" Maximum="{Binding MaxMorphologyValue}"
                     Value="{Binding BeyondDilate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
             <Slider Name="BeyondErodeSilder"
-                    Grid.Column="3" Grid.Row="3"
+                    Grid.Column="3" Grid.Row="3"  ToolTip="Magnitute of the erode filter"
                     Minimum="{Binding MinMorphologyValue}" Maximum="{Binding MaxMorphologyValue}"
                     Value="{Binding BeyondErode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
             
             <Slider Name="TopErodeSilder"
-                    Grid.Column="4" Grid.Row="0"
+                    Grid.Column="4" Grid.Row="0"  ToolTip="Magnitute of the erode filter for contours"
                     Minimum="{Binding MinMorphologyValue}" Maximum="{Binding MaxMorphologyValue}"
                     Value="{Binding TopErode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>

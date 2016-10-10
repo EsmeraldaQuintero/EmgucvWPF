@@ -49,12 +49,19 @@ namespace Prueba_de_stream
             SurfImage observedCamera = GetSurfFeaturesOf(observedCameraImage);
             VectorOfVectorOfDMatch matches = GetMatches(modelWeapon, observedCamera);
             Mat matchesMask = new Mat(matches.Size, 1, DepthType.Cv8U, CHANNEL_MONO);
+
             Mat homography = null;
-            if ( GetMatchesMask(matches, matchesMask) )
+            bool result = false;
+            if (GetMatchesMask(matches, matchesMask))
             {
-                homography = GetHomography(modelWeapon,observedCamera,matches, matchesMask);
+                homography = GetHomography(modelWeapon, observedCamera, matches, matchesMask);
+                if( homography!= null)
+                {
+                    Point[] pts = GetHomographyPoints(modelWeapon.matImage.Size,homography);
+                    result = ValidArea(pts);
+                }
             }
-            return (homography!=null);
+            return result;
         }
 
         private static VectorOfVectorOfDMatch GetMatches(SurfImage modelWeapon, SurfImage observedCamera)
@@ -94,7 +101,9 @@ namespace Prueba_de_stream
 
         private static bool ValidDistance(float distance1, float distance2)
         {
-            return ((distance1/distance2) > UNIQUENESS_THRESHOLD);
+            return (distance1 < MATCH_THRESH);
+            //return (distance1 > (UNIQUENESS_THRESHOLD * distance2));
+            //return ((distance1/distance2) > UNIQUENESS_THRESHOLD);
         }
 
         private static Mat GetHomography(SurfImage modelWeapon, SurfImage observedCamera, VectorOfVectorOfDMatch matches, Mat mask)
@@ -113,6 +122,44 @@ namespace Prueba_de_stream
                 }
             }
             return null;
+        }
+
+        private static Point[] GetHomographyPoints(Size modelWeaponSize, Mat homography)
+        {
+            Rectangle rect = new Rectangle(Point.Empty, modelWeaponSize);
+            PointF[] pts = new PointF[]
+            {
+                  new PointF(rect.Left, rect.Bottom),
+                  new PointF(rect.Right, rect.Bottom),
+                  new PointF(rect.Right, rect.Top),
+                  new PointF(rect.Left, rect.Top)
+            };
+            pts = CvInvoke.PerspectiveTransform(pts, homography);
+            return Array.ConvertAll<PointF, Point>(pts, Point.Round);
+        }
+
+        private static bool ValidArea(Point[] pts)
+        {
+            double ca, co, h2, side1, side2, area1,area2;
+            bool result=false;
+
+            if ( (pts[1].X > 0 && pts[2].X > 0) && (pts[2].Y > 0 && pts[3].Y > 0))
+            {
+                ca = Math.Abs(pts[1].X - pts[0].X);
+                co = Math.Abs(pts[1].Y - pts[0].Y);
+                h2 = Math.Pow(ca, 2) + Math.Pow(co, 2);
+                side1 = Math.Sqrt(h2);
+                area2 = ca;
+
+                ca = Math.Abs(pts[2].X - pts[1].X);
+                co = Math.Abs(pts[2].Y - pts[1].Y);
+                h2 = Math.Pow(ca, 2) + Math.Pow(co, 2);
+                side2 = Math.Sqrt(h2);
+                area1 = side1 * side2;
+                area2 *= co;
+                result = (area1 > area2 / 2);
+            }
+            return result;
         }
     }
 }

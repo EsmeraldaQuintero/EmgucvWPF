@@ -100,7 +100,6 @@ namespace Prueba_de_stream
                 Image<Gray, byte> img2 = null;
                 Image<Gray, byte> img3 = null;
                 Image<Gray, byte> img4 = null;
-                Image<Gray, byte> img5 = null;
 
                 try
                 {
@@ -132,19 +131,19 @@ namespace Prueba_de_stream
                 List<Mat> modelList = GetModels();
                 List<Mat> blobList = BlobAlgorithm.SplitImageByROI(filterMask);
 
-                foreach (var img in blobList)
-                {
-                    Image<Bgr, byte> resultImg = new Image<Bgr, byte>(img.Size);
-                    resultImg = img.ToImage<Bgr, byte>();
-                    DisplayResult?.Invoke(resultImg, 100);
-                    foreach( var model in modelList)
-                    {
-                        if (SurfAlgorithm.Process(model, img))
-                        {
-                            System.Threading.Thread.Sleep(100);
-                        }
-                    }
-                }
+                //foreach (var img in blobList)
+                //{
+                //    Image<Bgr, byte> resultImg = new Image<Bgr, byte>(img.Size);
+                //    resultImg = img.ToImage<Bgr, byte>();
+                //    DisplayResult?.Invoke(resultImg, 100);
+                //    foreach( var model in modelList)
+                //    {
+                //        if (SurfAlgorithm.Process(model, img))
+                //        {
+                //            System.Threading.Thread.Sleep(100);
+                //        }
+                //    }
+                //}
 
             }
             catch (ArgumentException ae) {}
