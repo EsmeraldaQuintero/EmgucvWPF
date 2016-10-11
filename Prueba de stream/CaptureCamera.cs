@@ -131,6 +131,10 @@ namespace Prueba_de_stream
                 List<Mat> modelList = GetModels();
                 List<Mat> blobList = BlobAlgorithm.SplitImageByROI(filterMask);
 
+                if (blobList.Count > 0 && SurfAlgorithm.Process(modelList[0], blobList[0]))
+                {
+                    System.Threading.Thread.Sleep(10);
+                }
                 //foreach (var img in blobList)
                 //{
                 //    Image<Bgr, byte> resultImg = new Image<Bgr, byte>(img.Size);

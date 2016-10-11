@@ -13,19 +13,21 @@ namespace Prueba_de_stream
     public class SurfAlgorithm
     {
 
-        private const int   K = 2;
-        private const int   START_IDX = 0;
-        private const int   CHANNEL_MONO = 1;
-        private const int   RANSAC_THRESH = 2;
-        private const int   ROTATION_BINS = 20;
-        private const int   MIN_VALID_MATCHES = 8;
-        private const byte  VALID_MATCH_VAL = 1;
-        private const byte  NOT_VALID_MATCH_VAL = 0;
+        private const int K = 2;
+        private const int START_IDX = 0;
+        private const int CHANNEL_MONO = 1;
+        private const int RANSAC_THRESH = 2;
+        private const int ROTATION_BINS = 20;
+        private const int MIN_VALID_MATCHES = 8;
+        private const byte VALID_MATCH_VAL = 1;
+        private const byte NOT_VALID_MATCH_VAL = 0;
         private const double MATCH_THRESH = 0.6;
         private const double SCALE_INCREMENT = 1.5;
         private const double UNIQUENESS_THRESHOLD = 0.8;
         private const double HESSIAN_THRESH = 300;
-        private const bool  IGNORE_PROVIDED_KEYPOINS = false;
+        private const bool IGNORE_PROVIDED_KEYPOINS = false;
+
+        private const double DISTANCE_TRESH = 160;
 
         private static SURF surfCPU;
         static SurfAlgorithm()
@@ -52,15 +54,17 @@ namespace Prueba_de_stream
 
             Mat homography = null;
             bool result = false;
-            if (GetMatchesMask(matches, matchesMask))
+
+            if (GetMatchesMask(matches, matchesMask, modelWeapon.keyPoints, observedCamera.keyPoints))
             {
-                homography = GetHomography(modelWeapon, observedCamera, matches, matchesMask);
-                if( homography!= null)
-                {
-                    Point[] pts = GetHomographyPoints(modelWeapon.matImage.Size,homography);
-                    result = ValidArea(pts);
-                }
+                //homography = GetHomography(modelWeapon, observedCamera, matches, matchesMask);
+                //if( homography!= null)
+                //{
+                //    Point[] pts = GetHomographyPoints(modelWeapon.matImage.Size,homography);
+                //    result = ValidArea(pts);
+                //}
             }
+
             return result;
         }
 
@@ -73,26 +77,83 @@ namespace Prueba_de_stream
             return matches;
         }
 
-        private static bool GetMatchesMask(VectorOfVectorOfDMatch matches, Mat mask)
+        private static bool GetMatchesMask(VectorOfVectorOfDMatch matches, Mat mask, VectorOfKeyPoint modelKeypoint, VectorOfKeyPoint observedKeypoint)
         {
             MDMatch[][] arrayOfMatches = matches.ToArrayOfArray();
             byte[] data = new byte[matches.Size];
             double SSDacumulator = 0.0;
+
             for (int i = 0; i < matches.Size; i++)
             {
-                SSDacumulator += diffSqr(arrayOfMatches[i][0].Distance, arrayOfMatches[i][1].Distance);
-                if (ValidDistance(arrayOfMatches[i][0].Distance, arrayOfMatches[i][1].Distance))
+                for (int j = 0; j < matches[i].Size; j++)
                 {
-                    data[i] = VALID_MATCH_VAL;
-                }
-                else
-                {
-                    data[i] = NOT_VALID_MATCH_VAL;
+                    PointF from = modelKeypoint[matches[i][j].TrainIdx].Point;
+                    PointF to = observedKeypoint[matches[i][j].QueryIdx].Point;
+                    double dist = CalculateHypotenuseOfDistance(from, to);
+
+                    if (dist < DISTANCE_TRESH)
+                    {
+                        data[i] = VALID_MATCH_VAL;
+                    }
+                    else
+                    {
+                        data[i] = NOT_VALID_MATCH_VAL;
+                    }
                 }
             }
             Marshal.Copy(data, START_IDX, mask.DataPointer, matches.Size);
             return (SSDacumulator > MATCH_THRESH);
         }
+
+        private static double CalculateHypotenuseOfDistance(PointF from, PointF to)
+        {
+            double ssd_x = Math.Pow(from.X - to.X, 2);
+            double ssd_y = Math.Pow(from.Y - to.Y, 2);
+            return Math.Sqrt(ssd_x + ssd_y);
+        }
+
+
+        //private static bool GetMatchesMask(VectorOfVectorOfDMatch matches, Mat mask)
+        //{
+        //    MDMatch[][] arrayOfMatches = matches.ToArrayOfArray();
+        //    byte[] data = new byte[matches.Size];
+        //    double SSDacumulator = 0.0;
+        //    for (int i = 0; i < matches.Size; i++)
+        //    {
+        //        SSDacumulator += diffSqr(arrayOfMatches[i][0].Distance, arrayOfMatches[i][1].Distance);
+        //        if (ValidDistance(arrayOfMatches[i][0].Distance, arrayOfMatches[i][1].Distance))
+        //        {
+        //            data[i] = VALID_MATCH_VAL;
+        //        }
+        //        else
+        //        {
+        //            data[i] = NOT_VALID_MATCH_VAL;
+        //        }
+        //    }
+        //    Marshal.Copy(data, START_IDX, mask.DataPointer, matches.Size);
+        //    return (SSDacumulator > MATCH_THRESH);
+        //}
+
+        //private static bool GetMatchesMask(VectorOfVectorOfDMatch matches, Mat mask, UMat modelDescriptors, UMat observedDescriptors)
+        //{
+        //    MDMatch[][] arrayOfMatches = matches.ToArrayOfArray();
+        //    byte[] data = new byte[matches.Size];
+        //    double SSDacumulator = 0.0;
+        //    for (int i = 0; i < matches.Size; i++)
+        //    {
+        //        SSDacumulator += diffSqr(modelDescriptors.Bytes[matches[i][0].QueryIdx], observedDescriptors.Bytes[matches[i][1].TrainIdx]);
+        //        if (ValidDistance(arrayOfMatches[i][0].Distance, arrayOfMatches[i][1].Distance))
+        //        {
+        //            data[i] = VALID_MATCH_VAL;
+        //        }
+        //        else
+        //        {
+        //            data[i] = NOT_VALID_MATCH_VAL;
+        //        }
+        //    }
+        //    Marshal.Copy(data, START_IDX, mask.DataPointer, matches.Size);
+        //    return (SSDacumulator > MATCH_THRESH);
+        //}
 
         private static double diffSqr(float distance1, float distance2)
         {
@@ -101,9 +162,9 @@ namespace Prueba_de_stream
 
         private static bool ValidDistance(float distance1, float distance2)
         {
-            return (distance1 < MATCH_THRESH);
+            //return (distance1 < MATCH_THRESH);
             //return (distance1 > (UNIQUENESS_THRESHOLD * distance2));
-            //return ((distance1/distance2) > UNIQUENESS_THRESHOLD);
+            return ((distance1/distance2) > UNIQUENESS_THRESHOLD);
         }
 
         private static Mat GetHomography(SurfImage modelWeapon, SurfImage observedCamera, VectorOfVectorOfDMatch matches, Mat mask)
