@@ -15,15 +15,11 @@ namespace Prueba_de_stream
         private const int K = 2;
         private const int START_IDX = 0;
         private const int CHANNEL_MONO = 1;
-        //private const int RANSAC_THRESH = 2;
         private const int ROTATION_BINS = 20;
-        //private const int MIN_VALID_MATCHES = 4;
         private const byte VALID_MATCH_VAL = 1;
-        //private const byte NOT_VALID_MATCH_VAL = 0;
-        //private const double MATCH_THRESH = 0.6;
+        private const double HESSIAN_THRESH = 300;
         private const double SCALE_INCREMENT = 1.5;
         private const double UNIQUENESS_THRESHOLD = 0.8;
-        private const double HESSIAN_THRESH = 300;
         private const bool IGNORE_PROVIDED_KEYPOINS = false;
 
         private static SURF surfCPU;
@@ -49,15 +45,19 @@ namespace Prueba_de_stream
             VectorOfVectorOfDMatch matches = GetMatches(modelWeapon, observedCamera);
             Mat matchesMask = new Mat(matches.Size, 1, DepthType.Cv8U, CHANNEL_MONO);
 
-            bool flag = false;
-            if ( GetMatchesMask(matches, modelWeapon, observedCamera, matchesMask) )
+            if (matches.Size > modelWeapon.keyPoints.Size / 2)
             {
-                flag = true;
+                byte[] data = VoteForDistanceAndUniqueness(matches, modelWeapon, observedCamera);
+                Marshal.Copy(data, START_IDX, matchesMask.DataPointer, matches.Size);
+                int nonZeroCountMatches = CvInvoke.CountNonZero(matchesMask);
+                if (nonZeroCountMatches >= modelWeapon.keyPoints.Size / 4)
+                {
+                    nonZeroCountMatches = Features2DToolbox.VoteForSizeAndOrientation(modelWeapon.keyPoints, observedCamera.keyPoints,
+                    matches, matchesMask, SCALE_INCREMENT, ROTATION_BINS);
+                    return true;
+                }
             }
-
-
-
-            return flag;
+            return false;
         }
 
         private static VectorOfVectorOfDMatch GetMatches(SurfImage modelWeapon, SurfImage observedCamera)
@@ -67,24 +67,6 @@ namespace Prueba_de_stream
             matcher.Add(modelWeapon.descriptors);
             matcher.KnnMatch(observedCamera.descriptors, matches, K, null);
             return matches;
-        }
-
-        private static bool GetMatchesMask(VectorOfVectorOfDMatch matches, SurfImage modelWeapon, SurfImage observedCamera, Mat mask)
-        {
-            if (matches.Size > modelWeapon.keyPoints.Size / 2)
-            {
-                byte[] data = VoteForDistanceAndUniqueness(matches, modelWeapon, observedCamera);
-                Marshal.Copy(data, START_IDX, mask.DataPointer, matches.Size);
-                int nonZeroCountMatches = CvInvoke.CountNonZero(mask);
-                if (nonZeroCountMatches >= modelWeapon.keyPoints.Size / 4)
-                {
-                    nonZeroCountMatches = Features2DToolbox.VoteForSizeAndOrientation(modelWeapon.keyPoints, observedCamera.keyPoints,
-                    matches, mask, SCALE_INCREMENT, ROTATION_BINS);
-                }
-            }
-
-            //return (nonZeroCountMatches >= MIN_VALID_MATCHES);
-            return false;
         }
 
         private static byte[] VoteForDistanceAndUniqueness(VectorOfVectorOfDMatch matches, SurfImage modelWeapon, SurfImage observedCamera)
@@ -115,60 +97,5 @@ namespace Prueba_de_stream
             return Math.Sqrt(ssd_x + ssd_y);
         }
 
-
-
-
-        //private static Mat GetHomography(SurfImage modelWeapon, SurfImage observedCamera, VectorOfVectorOfDMatch matches, Mat mask)
-        //{
-        //    Mat homography = null;
-
-        //    int nonZeroCountMatches = Features2DToolbox.VoteForSizeAndOrientation(modelWeapon.keyPoints, observedCamera.keyPoints,
-        //        matches, mask, SCALE_INCREMENT, ROTATION_BINS);
-        //    if (nonZeroCountMatches >= MIN_VALID_MATCHES)
-        //    {
-        //        homography = Features2DToolbox.GetHomographyMatrixFromMatchedFeatures(modelWeapon.keyPoints, observedCamera.keyPoints, matches, mask, RANSAC_THRESH);
-        //        nonZeroCountMatches = CvInvoke.CountNonZero(mask);
-        //        return (nonZeroCountMatches >= MIN_VALID_MATCHES) ? homography : null;
-        //    }
-        //    return null;
-        //}
-
-        //private static Point[] GetHomographyPoints(Size modelWeaponSize, Mat homography)
-        //{
-        //    Rectangle rect = new Rectangle(Point.Empty, modelWeaponSize);
-        //    PointF[] pts = new PointF[]
-        //    {
-        //          new PointF(rect.Left, rect.Bottom),
-        //          new PointF(rect.Right, rect.Bottom),
-        //          new PointF(rect.Right, rect.Top),
-        //          new PointF(rect.Left, rect.Top)
-        //    };
-        //    pts = CvInvoke.PerspectiveTransform(pts, homography);
-        //    return Array.ConvertAll<PointF, Point>(pts, Point.Round);
-        //}
-
-        //private static bool ValidArea(Point[] pts)
-        //{
-        //    double ca, co, h2, side1, side2, area1,area2;
-        //    bool result=false;
-
-        //    if ( (pts[1].X > 0 && pts[2].X > 0) && (pts[2].Y > 0 && pts[3].Y > 0))
-        //    {
-        //        ca = Math.Abs(pts[1].X - pts[0].X);
-        //        co = Math.Abs(pts[1].Y - pts[0].Y);
-        //        h2 = Math.Pow(ca, 2) + Math.Pow(co, 2);
-        //        side1 = Math.Sqrt(h2);
-        //        area2 = ca;
-
-        //        ca = Math.Abs(pts[2].X - pts[1].X);
-        //        co = Math.Abs(pts[2].Y - pts[1].Y);
-        //        h2 = Math.Pow(ca, 2) + Math.Pow(co, 2);
-        //        side2 = Math.Sqrt(h2);
-        //        area1 = side1 * side2;
-        //        area2 *= co;
-        //        result = (area1 > area2 / 2);
-        //    }
-        //    return result;
-        //}
     }
 }
