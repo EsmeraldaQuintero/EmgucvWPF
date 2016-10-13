@@ -137,9 +137,9 @@ namespace Prueba_de_stream
                 //    resultImg = blobList[0].ToImage<Bgr, byte>();
                 //    DisplayResult?.Invoke(resultImg, 100);
                 //}
-                foreach (var img in blobList)
+                foreach (var model in modelList)
                 {
-                    if (SurfAlgorithm.Process(modelList[0], img))
+                    if (blobList.Count > 0 && SurfAlgorithm.Process(model, blobList[0]))
                     {
                         Image<Bgr, byte> resultImg = new Image<Bgr, byte>(blobList[0].Size);
                         resultImg = blobList[0].ToImage<Bgr, byte>();
