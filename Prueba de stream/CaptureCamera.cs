@@ -131,20 +131,31 @@ namespace Prueba_de_stream
                 List<Mat> modelList = GetModels();
                 List<Mat> blobList = BlobAlgorithm.SplitImageByROI(filterMask);
 
-                if (blobList.Count > 0 && SurfAlgorithm.Process(modelList[0], blobList[0]))
+                //if (blobList.Count > 0 && SurfAlgorithm.Process(modelList[0], blobList[0]))
+                //{
+                //    Image<Bgr, byte> resultImg = new Image<Bgr, byte>(blobList[0].Size);
+                //    resultImg = blobList[0].ToImage<Bgr, byte>();
+                //    DisplayResult?.Invoke(resultImg, 100);
+                //}
+                foreach (var img in blobList)
                 {
-                    System.Threading.Thread.Sleep(10);
+                    if (SurfAlgorithm.Process(modelList[0], img))
+                    {
+                        Image<Bgr, byte> resultImg = new Image<Bgr, byte>(blobList[0].Size);
+                        resultImg = blobList[0].ToImage<Bgr, byte>();
+                        DisplayResult?.Invoke(resultImg, 100);
+                    }
                 }
+
                 //foreach (var img in blobList)
                 //{
                 //    Image<Bgr, byte> resultImg = new Image<Bgr, byte>(img.Size);
                 //    resultImg = img.ToImage<Bgr, byte>();
-                //    DisplayResult?.Invoke(resultImg, 100);
-                //    foreach( var model in modelList)
+                //    foreach (var model in modelList)
                 //    {
                 //        if (SurfAlgorithm.Process(model, img))
                 //        {
-                //            System.Threading.Thread.Sleep(100);
+                //            DisplayResult?.Invoke(resultImg, 100);
                 //        }
                 //    }
                 //}

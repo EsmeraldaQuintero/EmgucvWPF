@@ -33,12 +33,6 @@ namespace Prueba_de_stream
                 foreach (var pair in blobs)
                 {
                     Rectangle cropRectangle = pair.Value.BoundingBox;
-                    //cropRectangle.X -= (cropRectangle.X - 10) > 0? 10 : 0;
-                    cropRectangle.X -= 10;
-                    cropRectangle.Y -= 10;
-                    cropRectangle.Width += 10;
-                    cropRectangle.Height += 10;
-
                     contourImg.ROI = cropRectangle;
                     Mat newImg = new Mat();
                     contourImg.Mat.CopyTo(newImg);
