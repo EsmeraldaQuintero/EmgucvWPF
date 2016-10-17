@@ -26,6 +26,8 @@ namespace Prueba_de_stream
             DataContext = captureCamera.context;
 
             CaptureButton.Content = "Start Capture";
+            ScreenShotButton.Content = "Make Screenshot";
+            OpenImageButton.Content = "Open Image";
         }
 
         private void captureButtonClick(object sender, EventArgs e)
@@ -45,6 +47,16 @@ namespace Prueba_de_stream
 
                 _captureInProgress = !_captureInProgress;
             }
+        }
+
+        private void ScreenShotButtonClick(object sender, EventArgs e)
+        {
+            captureCamera.SaveScreenshot();
+        }
+
+        private void OpenImgButtonClick(object sender, EventArgs e)
+        {
+            captureCamera.OpenImage();
         }
 
         private void DisplayResult(Image<Bgr, byte> resultImg, long matchTime)

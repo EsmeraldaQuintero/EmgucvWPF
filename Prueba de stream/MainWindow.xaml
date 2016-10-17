@@ -28,7 +28,10 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Button     Name="CaptureButton" Grid.Column="0"  Grid.RowSpan="4" Click="captureButtonClick"/>
+            <Button     Name="CaptureButton"    Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Click="captureButtonClick"/>
+            <Button     Name="ScreenShotButton" Grid.Column="0" Grid.Row="2" Grid.RowSpan="1" Click="ScreenShotButtonClick"/>
+            <Button     Name="OpenImageButton"  Grid.Column="0" Grid.Row="3" Grid.RowSpan="1" Click="OpenImgButtonClick"/>
+
             <TextBlock  Name="MatchTimeText" Grid.Column="1" Grid.RowSpan="4"/>
 
             <Slider Name="NoiseBGSlider"

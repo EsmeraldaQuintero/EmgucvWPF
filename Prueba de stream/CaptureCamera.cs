@@ -4,6 +4,8 @@ using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV;
 using System.Collections.Generic;
+using Microsoft.Win32;
+using System.IO;
 
 namespace Prueba_de_stream
 {
@@ -65,6 +67,34 @@ namespace Prueba_de_stream
             _capture.Retrieve(backgroundFrame);
         }
 
+        public Mat saveImg = null;
+        public void SaveScreenshot()
+        {
+            string code = Guid.NewGuid().ToString();
+            string path = "C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\TrainedImg\\" + code + ".png";
+            if(saveImg!= null && !saveImg.IsEmpty)
+            {
+                saveImg.Save(path);
+            }
+
+        }
+
+        Mat imgOpenFrame = new Mat();
+        public void OpenImage()
+        {
+            string filterString = "Image Files(*.BMP; *.JPG)| *.BMP; *.JPG";
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = filterString;
+            openFileDialog.FilterIndex = 1;
+            openFileDialog.InitialDirectory = "C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\OriginalImg";
+            openFileDialog.ShowDialog();
+
+            if ( !string.IsNullOrEmpty(openFileDialog.FileName) )
+            {
+                imgOpenFrame = CvInvoke.Imread(openFileDialog.FileName, LoadImageType.Color);
+            }
+        }
+
         private void ProcessFrame(object sender, EventArgs e)
         {
             long matchTime = 0;
@@ -76,25 +106,24 @@ namespace Prueba_de_stream
             Mat filterMask = new Mat();
 
             _capture.Retrieve(currentFrame);
-            //currentFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\pepe.jpg", LoadImageType.Grayscale);
 
-            if ( !currentFrame.IsEmpty )
+            if (!currentFrame.IsEmpty)
             {
                 withoutBackgroundMask = ImagePreProcessorAlgorithms.BackgroundRemover(backgroundFrame, currentFrame);
             }
 
-            if (!withoutBackgroundMask.IsEmpty )
+            if (!withoutBackgroundMask.IsEmpty)
             {
                 segmentedMask = ImagePreProcessorAlgorithms.SegmentationFilter(currentFrame);
             }
-            
-            if( !segmentedMask.IsEmpty )
+
+            if (!segmentedMask.IsEmpty)
             {
                 segmentedMask.CopyTo(maskAnd, withoutBackgroundMask);
                 filterMask = ImagePreProcessorAlgorithms.MorphologyFilter(maskAnd);
             }
 
-            if ( !filterMask.IsEmpty )
+            if (!filterMask.IsEmpty)
             {
                 Image<Gray, byte> img1 = null;
                 Image<Gray, byte> img2 = null;
@@ -131,15 +160,11 @@ namespace Prueba_de_stream
                 List<Mat> modelList = GetModels();
                 List<Mat> blobList = BlobAlgorithm.SplitImageByROI(filterMask);
 
-                //if (blobList.Count > 0 && SurfAlgorithm.Process(modelList[0], blobList[0]))
-                //{
-                //    Image<Bgr, byte> resultImg = new Image<Bgr, byte>(blobList[0].Size);
-                //    resultImg = blobList[0].ToImage<Bgr, byte>();
-                //    DisplayResult?.Invoke(resultImg, 100);
-                //}
+                Mat model1 = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\10.png", LoadImageType.Grayscale);
+
                 foreach (var model in modelList)
                 {
-                    if (blobList.Count > 0 && SurfAlgorithm.Process(model, blobList[0]))
+                    if (blobList.Count > 0 && SurfAlgorithm.Process(model1, blobList[0]))
                     {
                         Image<Bgr, byte> resultImg = new Image<Bgr, byte>(blobList[0].Size);
                         resultImg = blobList[0].ToImage<Bgr, byte>();
@@ -161,7 +186,50 @@ namespace Prueba_de_stream
                 //}
 
             }
-            catch (ArgumentException ae) {}
+            catch (ArgumentException ae) { }
+
+
+            //if (!imgOpenFrame.IsEmpty)
+            //{
+            //    segmentedMask = ImagePreProcessorAlgorithms.SegmentationFilter(imgOpenFrame);
+            //}
+            //if (!segmentedMask.IsEmpty)
+            //{
+            //    filterMask = ImagePreProcessorAlgorithms.MorphologyFilter(segmentedMask);
+            //}
+
+            //if (!filterMask.IsEmpty)
+            //{
+            //    Image<Gray, byte> img1 = null;
+            //    Image<Gray, byte> img2 = null;
+            //    Image<Gray, byte> img3 = null;
+            //    Image<Gray, byte> img4 = null;
+
+            //    try
+            //    {
+            //        img1 = imgOpenFrame.ToImage<Gray, byte>();
+            //        img2 = segmentedMask.ToImage<Gray, byte>();
+            //        img3 = filterMask.ToImage<Gray, byte>();
+            //        img4 = filterMask.ToImage<Gray, byte>();
+            //        saveImg = filterMask;
+
+
+            //        DisplayImages?.Invoke(img1, img2, img3, img4);
+            //        DisplayResult?.Invoke(filterMask.ToImage<Bgr, byte>(), 100);
+            //    }
+
+            //    finally
+            //    {
+            //        if (img1 != null)
+            //            ((IDisposable)img1).Dispose();
+            //        if (img2 != null)
+            //            ((IDisposable)img2).Dispose();
+            //        if (img3 != null)
+            //            ((IDisposable)img3).Dispose();
+            //        if (img4 != null)
+            //            ((IDisposable)img4).Dispose();
+            //    }
+            //}
         }
 
         private List<Mat> GetModels()
