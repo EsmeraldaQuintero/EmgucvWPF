@@ -105,97 +105,22 @@ namespace Prueba_de_stream
             Mat maskAnd = new Mat();
             Mat filterMask = new Mat();
 
-            _capture.Retrieve(currentFrame);
+            //_capture.Retrieve(currentFrame);
 
-            if (!currentFrame.IsEmpty)
-            {
-                withoutBackgroundMask = ImagePreProcessorAlgorithms.BackgroundRemover(backgroundFrame, currentFrame);
-            }
-
-            if (!withoutBackgroundMask.IsEmpty)
-            {
-                segmentedMask = ImagePreProcessorAlgorithms.SegmentationFilter(currentFrame);
-            }
-
-            if (!segmentedMask.IsEmpty)
-            {
-                segmentedMask.CopyTo(maskAnd, withoutBackgroundMask);
-                filterMask = ImagePreProcessorAlgorithms.MorphologyFilter(maskAnd);
-            }
-
-            if (!filterMask.IsEmpty)
-            {
-                Image<Gray, byte> img1 = null;
-                Image<Gray, byte> img2 = null;
-                Image<Gray, byte> img3 = null;
-                Image<Gray, byte> img4 = null;
-
-                try
-                {
-                    img1 = withoutBackgroundMask.ToImage<Gray, byte>();
-                    img2 = segmentedMask.ToImage<Gray, byte>();
-                    img3 = maskAnd.ToImage<Gray, byte>();
-                    img4 = filterMask.ToImage<Gray, byte>();
-
-                    DisplayImages?.Invoke(img1, img2, img3, img4);
-                }
-
-                finally
-                {
-                    if (img1 != null)
-                        ((IDisposable)img1).Dispose();
-                    if (img2 != null)
-                        ((IDisposable)img2).Dispose();
-                    if (img3 != null)
-                        ((IDisposable)img3).Dispose();
-                    if (img4 != null)
-                        ((IDisposable)img4).Dispose();
-                }
-            }
-
-            try
-            {
-                long time;
-
-                List<Mat> modelList = GetModels();
-                List<Mat> blobList = BlobAlgorithm.SplitImageByROI(filterMask);
-
-                Mat model1 = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\10.png", LoadImageType.Grayscale);
-
-                foreach (var model in modelList)
-                {
-                    if (blobList.Count > 0 && SurfAlgorithm.Process(model1, blobList[0]))
-                    {
-                        Image<Bgr, byte> resultImg = new Image<Bgr, byte>(blobList[0].Size);
-                        resultImg = blobList[0].ToImage<Bgr, byte>();
-                        DisplayResult?.Invoke(resultImg, 100);
-                    }
-                }
-
-                //foreach (var img in blobList)
-                //{
-                //    Image<Bgr, byte> resultImg = new Image<Bgr, byte>(img.Size);
-                //    resultImg = img.ToImage<Bgr, byte>();
-                //    foreach (var model in modelList)
-                //    {
-                //        if (SurfAlgorithm.Process(model, img))
-                //        {
-                //            DisplayResult?.Invoke(resultImg, 100);
-                //        }
-                //    }
-                //}
-
-            }
-            catch (ArgumentException ae) { }
-
-
-            //if (!imgOpenFrame.IsEmpty)
+            //if (!currentFrame.IsEmpty)
             //{
-            //    segmentedMask = ImagePreProcessorAlgorithms.SegmentationFilter(imgOpenFrame);
+            //    withoutBackgroundMask = ImagePreProcessorAlgorithms.BackgroundRemover(backgroundFrame, currentFrame);
             //}
+
+            //if (!withoutBackgroundMask.IsEmpty)
+            //{
+            //    segmentedMask = ImagePreProcessorAlgorithms.SegmentationFilter(currentFrame);
+            //}
+
             //if (!segmentedMask.IsEmpty)
             //{
-            //    filterMask = ImagePreProcessorAlgorithms.MorphologyFilter(segmentedMask);
+            //    segmentedMask.CopyTo(maskAnd, withoutBackgroundMask);
+            //    filterMask = ImagePreProcessorAlgorithms.MorphologyFilter(maskAnd);
             //}
 
             //if (!filterMask.IsEmpty)
@@ -207,15 +132,12 @@ namespace Prueba_de_stream
 
             //    try
             //    {
-            //        img1 = imgOpenFrame.ToImage<Gray, byte>();
+            //        img1 = withoutBackgroundMask.ToImage<Gray, byte>();
             //        img2 = segmentedMask.ToImage<Gray, byte>();
-            //        img3 = filterMask.ToImage<Gray, byte>();
+            //        img3 = maskAnd.ToImage<Gray, byte>();
             //        img4 = filterMask.ToImage<Gray, byte>();
-            //        saveImg = filterMask;
-
 
             //        DisplayImages?.Invoke(img1, img2, img3, img4);
-            //        DisplayResult?.Invoke(filterMask.ToImage<Bgr, byte>(), 100);
             //    }
 
             //    finally
@@ -230,6 +152,84 @@ namespace Prueba_de_stream
             //            ((IDisposable)img4).Dispose();
             //    }
             //}
+
+            //try
+            //{
+            //    long time;
+
+            //    List<Mat> modelList = GetModels();
+            //    List<Mat> blobList = BlobAlgorithm.SplitImageByROI(filterMask);
+
+            //    Mat model1 = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\10.png", LoadImageType.Grayscale);
+
+            //    foreach (var model in modelList)
+            //    {
+            //        if (blobList.Count > 0 && SurfAlgorithm.Process(model1, blobList[0]))
+            //        {
+            //            Image<Bgr, byte> resultImg = new Image<Bgr, byte>(blobList[0].Size);
+            //            resultImg = blobList[0].ToImage<Bgr, byte>();
+            //            DisplayResult?.Invoke(resultImg, 100);
+            //        }
+            //    }
+
+            //    //foreach (var img in blobList)
+            //    //{
+            //    //    Image<Bgr, byte> resultImg = new Image<Bgr, byte>(img.Size);
+            //    //    resultImg = img.ToImage<Bgr, byte>();
+            //    //    foreach (var model in modelList)
+            //    //    {
+            //    //        if (SurfAlgorithm.Process(model, img))
+            //    //        {
+            //    //            DisplayResult?.Invoke(resultImg, 100);
+            //    //        }
+            //    //    }
+            //    //}
+
+            //}
+            //catch (ArgumentException ae) { }
+
+
+            if (!imgOpenFrame.IsEmpty)
+            {
+                segmentedMask = ImagePreProcessorAlgorithms.SegmentationFilter(imgOpenFrame);
+            }
+            if (!segmentedMask.IsEmpty)
+            {
+                filterMask = ImagePreProcessorAlgorithms.MorphologyFilter(segmentedMask);
+            }
+
+            if (!filterMask.IsEmpty)
+            {
+                Image<Gray, byte> img1 = null;
+                Image<Gray, byte> img2 = null;
+                Image<Gray, byte> img3 = null;
+                Image<Gray, byte> img4 = null;
+
+                try
+                {
+                    img1 = imgOpenFrame.ToImage<Gray, byte>();
+                    img2 = segmentedMask.ToImage<Gray, byte>();
+                    img3 = filterMask.ToImage<Gray, byte>();
+                    img4 = filterMask.ToImage<Gray, byte>();
+                    saveImg = filterMask;
+
+
+                    DisplayImages?.Invoke(img1, img2, img3, img4);
+                    DisplayResult?.Invoke(filterMask.ToImage<Bgr, byte>(), 100);
+                }
+
+                finally
+                {
+                    if (img1 != null)
+                        ((IDisposable)img1).Dispose();
+                    if (img2 != null)
+                        ((IDisposable)img2).Dispose();
+                    if (img3 != null)
+                        ((IDisposable)img3).Dispose();
+                    if (img4 != null)
+                        ((IDisposable)img4).Dispose();
+                }
+            }
         }
 
         private List<Mat> GetModels()

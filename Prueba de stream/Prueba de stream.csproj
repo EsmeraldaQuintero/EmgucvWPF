@@ -112,6 +112,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="training\8.PNG" />
     <Resource Include="training\book.png" />
   </ItemGroup>
   <ItemGroup>
@@ -126,8 +127,6 @@
   <ItemGroup>
     <Resource Include="training\6.PNG" />
     <Resource Include="training\7.PNG" />
-    <Resource Include="training\8.PNG" />
-    <Resource Include="training\9.PNG" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="training\5.PNG" />
