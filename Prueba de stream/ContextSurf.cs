@@ -150,7 +150,7 @@ namespace Prueba_de_stream
         #region Private variables
         private int _noiseBG = 38;
         private int _clarifyBG = 38;
-        private int _erodeBG = 10;
+        private int _erodeBG = 4;
         private int _dilateBG = 7;
         private double _gaussianBlurVal = 1.0;
         private int _minHueForHSV = 85;

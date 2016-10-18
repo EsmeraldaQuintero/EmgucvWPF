@@ -58,14 +58,10 @@ namespace Prueba_de_stream
                     Image<Gray, Byte> y = channels[0];
                     var yfilter = y.InRange(new Gray(0), new Gray(context.NoiseBG));
 
-                    //Eroding and Dilating the source image using the specified structuring element
-                    Mat filter = new Mat();
-                    filter = ErodeImage(yfilter.Mat, context.ErodeBG);
-                    filter = DilateImage(filter, context.DilateBG);
-
                     //Applying mask
                     Mat mask = new Mat();
-                    CvInvoke.CvtColor(yfilter.Not().Mat, mask, ColorConversion.Gray2Bgr);
+                    Mat filter = ErodeImage(yfilter.Not().Mat, context.ErodeBG);
+                    CvInvoke.CvtColor(filter, mask, ColorConversion.Gray2Bgr);
                     CvInvoke.CvtColor(mask, mask, ColorConversion.Bgr2Gray);
                     return mask;
                 }

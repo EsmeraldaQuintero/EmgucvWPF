@@ -41,12 +41,12 @@
                     Minimum="{Binding MinYCCValue}" Maximum="{Binding MaxYCCValue}"
                     Value="{Binding ClarifyBG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
-            <Slider Name="ErodeBGSlider"
+            <Slider Name="ErodeBGSlider" Visibility="Visible"
                     Grid.Column="2" Grid.Row="2" ToolTip="Magnitute of the erode filter"
                     Minimum="{Binding MinMorphologyValue}" Maximum="{Binding MaxMorphologyValue}"
                     Value="{Binding ErodeBG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             </Slider>
-            <Slider Name="DilateBGSlider"
+            <Slider Name="DilateBGSlider" Visibility="Hidden"
                     Grid.Column="2" Grid.Row="3"  ToolTip="Magnitute of the dilate filter"
                     Minimum="{Binding MinMorphologyValue}" Maximum="{Binding MaxMorphologyValue}"
                     Value="{Binding DilateBG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
@@ -85,15 +85,17 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
-            <Image x:Name="BackgroundImage"         Stretch="Fill" Grid.Column="0"/>
-            <Image x:Name="WithoutBackgroundImage"  Stretch="Fill" Grid.Column="1"/>
-            <Image x:Name="SegmentedImage"          Stretch="Fill" Grid.Column="2"/>
-            <Image x:Name="ContoursImage"           Stretch="Fill" Grid.Column="3"/>
-            <Image x:Name="ResultImage"             Stretch="Fill" Grid.Column="4"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Image x:Name="BackgroundImage"         Stretch="Fill" Grid.Column="0" Grid.Row="0"/>
+            <Image x:Name="WithoutBackgroundImage"  Stretch="Fill" Grid.Column="1" Grid.Row="0"/>
+            <Image x:Name="SegmentedImage"          Stretch="Fill" Grid.Column="0" Grid.Row="1"/>
+            <Image x:Name="ContoursImage"           Stretch="Fill" Grid.Column="1" Grid.Row="1"/>
+            <Image x:Name="ResultImage"             Stretch="Fill" Grid.Column="2" Grid.RowSpan="2"/>
         </Grid>
     </Grid>
 </Window>

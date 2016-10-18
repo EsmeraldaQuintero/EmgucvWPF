@@ -4,6 +4,7 @@ using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Prueba_de_stream
 {
@@ -76,7 +77,6 @@ namespace Prueba_de_stream
             Mat filterMask = new Mat();
 
             _capture.Retrieve(currentFrame);
-            //currentFrame = CvInvoke.Imread("C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\pepe.jpg", LoadImageType.Grayscale);
 
             if ( !currentFrame.IsEmpty )
             {
@@ -103,9 +103,9 @@ namespace Prueba_de_stream
 
                 try
                 {
-                    img1 = withoutBackgroundMask.ToImage<Gray, byte>();
-                    img2 = segmentedMask.ToImage<Gray, byte>();
-                    img3 = maskAnd.ToImage<Gray, byte>();
+                    img1 = backgroundFrame.ToImage<Gray, byte>();
+                    img2 = withoutBackgroundMask.ToImage<Gray, byte>();
+                    img3 = segmentedMask.ToImage<Gray, byte>();
                     img4 = filterMask.ToImage<Gray, byte>();
 
                     DisplayImages?.Invoke(img1, img2, img3, img4);
@@ -126,39 +126,26 @@ namespace Prueba_de_stream
 
             try
             {
-                long time;
-
                 List<Mat> modelList = GetModels();
                 List<Mat> blobList = BlobAlgorithm.SplitImageByROI(filterMask);
 
-                //if (blobList.Count > 0 && SurfAlgorithm.Process(modelList[0], blobList[0]))
-                //{
-                //    Image<Bgr, byte> resultImg = new Image<Bgr, byte>(blobList[0].Size);
-                //    resultImg = blobList[0].ToImage<Bgr, byte>();
-                //    DisplayResult?.Invoke(resultImg, 100);
-                //}
-                foreach (var model in modelList)
+                long time = 0;                                     //Debug line
+                Stopwatch watch = Stopwatch.StartNew();             //Debug line
+                foreach (var img in blobList)
                 {
-                    if (blobList.Count > 0 && SurfAlgorithm.Process(model, blobList[0]))
+                    Image<Bgr, byte> resultImg = new Image<Bgr, byte>(img.Size);
+                    resultImg = img.ToImage<Bgr, byte>();
+                    foreach (var model in modelList)
                     {
-                        Image<Bgr, byte> resultImg = new Image<Bgr, byte>(blobList[0].Size);
-                        resultImg = blobList[0].ToImage<Bgr, byte>();
-                        DisplayResult?.Invoke(resultImg, 100);
+                        if (SurfAlgorithm.Process(model, img))
+                        {
+                            watch.Stop();                                       //Debug line
+                            time = watch.ElapsedMilliseconds;              //Debug line
+                            watch = Stopwatch.StartNew();             //Debug line
+                            DisplayResult?.Invoke(resultImg, time);
+                        }
                     }
                 }
-
-                //foreach (var img in blobList)
-                //{
-                //    Image<Bgr, byte> resultImg = new Image<Bgr, byte>(img.Size);
-                //    resultImg = img.ToImage<Bgr, byte>();
-                //    foreach (var model in modelList)
-                //    {
-                //        if (SurfAlgorithm.Process(model, img))
-                //        {
-                //            DisplayResult?.Invoke(resultImg, 100);
-                //        }
-                //    }
-                //}
 
             }
             catch (ArgumentException ae) {}
@@ -167,7 +154,7 @@ namespace Prueba_de_stream
         private List<Mat> GetModels()
         {
             List<Mat> modelList = new List<Mat>();
-            for (int i = 1; i < 10; i++)
+            for (int i = 1; i < 9; i++)
             {
                 string path = "C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\" + i + ".png";
                 Mat modelFrame = CvInvoke.Imread(path, LoadImageType.Grayscale);
