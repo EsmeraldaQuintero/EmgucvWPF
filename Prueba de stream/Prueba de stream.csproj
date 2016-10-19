@@ -63,7 +63,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BlobAlgorithm.cs" />
-    <Compile Include="DrawMatches.cs" />
+    <Compile Include="Cuda\CudaSurfAlgorithm.cs" />
+    <Compile Include="Cuda\CudaSurfImage.cs" />
     <Compile Include="EmguCvSurfLibrary.cs" />
     <Compile Include="ImagePreProcessorAlgorithms.cs" />
     <Compile Include="SurfAlgorithm.cs" />
@@ -139,6 +140,12 @@
   <ItemGroup>
     <Resource Include="training\8.PNG" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="training\10.PNG" />
+    <Resource Include="training\11.PNG" />
+    <Resource Include="training\12.PNG" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

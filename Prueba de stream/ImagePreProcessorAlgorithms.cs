@@ -61,7 +61,7 @@ namespace Prueba_de_stream
                     //Applying mask
                     Mat mask = new Mat();
                     Mat filter = ErodeImage(yfilter.Not().Mat, context.ErodeBG);
-                    CvInvoke.CvtColor(filter, mask, ColorConversion.Gray2Bgr);
+                    CvInvoke.CvtColor(yfilter.Not().Mat, mask, ColorConversion.Gray2Bgr);
                     CvInvoke.CvtColor(mask, mask, ColorConversion.Bgr2Gray);
                     return mask;
                 }

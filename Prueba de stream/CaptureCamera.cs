@@ -154,7 +154,7 @@ namespace Prueba_de_stream
         private List<Mat> GetModels()
         {
             List<Mat> modelList = new List<Mat>();
-            for (int i = 1; i < 9; i++)
+            for (int i = 1; i < 22; i++)
             {
                 string path = "C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\" + i + ".png";
                 Mat modelFrame = CvInvoke.Imread(path, LoadImageType.Grayscale);
