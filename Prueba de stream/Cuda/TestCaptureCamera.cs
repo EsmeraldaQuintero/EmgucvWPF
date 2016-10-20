@@ -6,28 +6,33 @@ using Emgu.CV;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Prueba_de_stream
+namespace Prueba_de_stream.Cuda
 {
-    public class CaptureCamera
+    public class TestCaptureCamera
     {
         public ContextSurf context;
         Mat backgroundFrame;
 
         private Capture _capture;
         private bool _ready;
-
+        private TestImagePreProcessorAlgorithm imagePreProcessorAlgorithm;
+        private CudaSurfAlgorithm cudaSurfAlgorithm;
+        private CudaSURFMatchAlgorithm cudaSURFMatchAlgorithm;
         public delegate void DisplayResultEventHandler(Image<Bgr, byte> resultFrame, long matchTime);
         public event DisplayResultEventHandler DisplayResult;
 
         public delegate void DisplayImagesEventHandler(Image<Gray,byte> currentFrame, Image<Gray, byte> minFrame, Image<Gray, byte> maxFrame, Image<Gray, byte> subFrame);
         public event DisplayImagesEventHandler DisplayImages;
 
-        public CaptureCamera()
+        public TestCaptureCamera()
         {
             _capture = null;
             _ready = false;
             CvInvoke.UseOpenCL = false;
 
+            imagePreProcessorAlgorithm = new TestImagePreProcessorAlgorithm();
+            cudaSurfAlgorithm = new CudaSurfAlgorithm();
+            cudaSURFMatchAlgorithm = new CudaSURFMatchAlgorithm();
             //createCapture("http://192.168.1.99/mjpg/video.mjpg");
             createCapture("");
             context = ContextSurf.Instance;
@@ -68,6 +73,7 @@ namespace Prueba_de_stream
 
         private void ProcessFrame(object sender, EventArgs e)
         {
+            imagePreProcessorAlgorithm.Context = context.TestContext;
             long matchTime = 0;
 
             Mat currentFrame = new Mat();
@@ -80,18 +86,18 @@ namespace Prueba_de_stream
 
             if ( !currentFrame.IsEmpty )
             {
-                withoutBackgroundMask = ImagePreProcessorAlgorithm.BackgroundRemover(backgroundFrame, currentFrame);
+                withoutBackgroundMask = imagePreProcessorAlgorithm.BackgroundRemover(backgroundFrame, currentFrame);
             }
 
             if (!withoutBackgroundMask.IsEmpty )
             {
-                segmentedMask = ImagePreProcessorAlgorithm.SegmentationFilter(currentFrame);
+                segmentedMask = imagePreProcessorAlgorithm.SegmentationFilter(currentFrame);
             }
             
             if( !segmentedMask.IsEmpty )
             {
                 segmentedMask.CopyTo(maskAnd, withoutBackgroundMask);
-                filterMask = ImagePreProcessorAlgorithm.MorphologyFilter(maskAnd);
+                filterMask = imagePreProcessorAlgorithm.MorphologyFilter(maskAnd);
             }
 
             if ( !filterMask.IsEmpty )
@@ -126,42 +132,24 @@ namespace Prueba_de_stream
 
             try
             {
-                List<Mat> modelList = GetModels();
+                int TRAIN_WIDTH = 640;
+                int TRAIN_HEIGHT = 480;
+                string path = "C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training";
+                List<CudaSurfImage> weaponsTrained = cudaSurfAlgorithm.LoadListOfWeaponsTrained(path, TRAIN_WIDTH, TRAIN_HEIGHT);
+                bool isWeaponDetected = false;
+
                 List<Mat> blobList = BlobAlgorithm.SplitImageByROI(filterMask);
 
-                long time = 0;                                     //Debug line
-                Stopwatch watch = Stopwatch.StartNew();             //Debug line
-                foreach (var img in blobList)
+                foreach (var blob in blobList)
                 {
-                    Image<Bgr, byte> resultImg = new Image<Bgr, byte>(img.Size);
-                    resultImg = img.ToImage<Bgr, byte>();
-                    foreach (var model in modelList)
+                    CudaSurfImage observedSurfImage = cudaSurfAlgorithm.GetSurfFeaturesOf(filterMask);
+                    weaponsTrained.ForEach(weaponModel =>
                     {
-                        if (SurfAlgorithm.Process(model, img))
-                        {
-                            watch.Stop();                                       //Debug line
-                            time = watch.ElapsedMilliseconds;              //Debug line
-                            watch = Stopwatch.StartNew();             //Debug line
-                            DisplayResult?.Invoke(resultImg, time);
-                        }
-                    }
+                        isWeaponDetected = cudaSURFMatchAlgorithm.Process(weaponModel, observedSurfImage);
+                    });
                 }
-
             }
             catch (ArgumentException ae) {}
-        }
-
-        private List<Mat> GetModels()
-        {
-            List<Mat> modelList = new List<Mat>();
-            for (int i = 1; i < 22; i++)
-            {
-                string path = "C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\" + i + ".png";
-                Mat modelFrame = CvInvoke.Imread(path, LoadImageType.Grayscale);
-                if (modelFrame != null && !modelFrame.IsEmpty)
-                    modelList.Add(modelFrame);
-            }
-            return modelList;
         }
     }
 }

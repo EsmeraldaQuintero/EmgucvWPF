@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Prueba_de_stream.Cuda;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -29,6 +30,7 @@ namespace Prueba_de_stream
             set
             {
                 _noiseBG = value;
+                TestContext.NoiseBG = value;
                 NotifyPropertyChanged();
             }
         }
@@ -42,6 +44,7 @@ namespace Prueba_de_stream
             set
             {
                 _clarifyBG = value;
+                TestContext.ClarifyBG = value;
                 NotifyPropertyChanged();
             }
         }
@@ -55,6 +58,7 @@ namespace Prueba_de_stream
             set
             {
                 _erodeBG = value;
+                TestContext.ErodeBG = value;
                 NotifyPropertyChanged();
             }
         }
@@ -68,6 +72,7 @@ namespace Prueba_de_stream
             set
             {
                 _dilateBG = value;
+                TestContext.DilateBG = value;
                 NotifyPropertyChanged();
             }
         }
@@ -81,6 +86,7 @@ namespace Prueba_de_stream
             set
             {
                 _gaussianBlurVal = value;
+                TestContext.GaussianBlurVal = value;
                 NotifyPropertyChanged();
             }
         }
@@ -95,6 +101,8 @@ namespace Prueba_de_stream
             {
                 _minHueForHSV = value;
                 _maxHueForHSV = value + HUE_STEP;
+                TestContext.MinHueForHSV = value;
+                TestContext.MaxHueForHSV = value + HUE_STEP;
                 NotifyPropertyChanged();
             }
         }
@@ -116,6 +124,7 @@ namespace Prueba_de_stream
             set
             {
                 _beyondDilate = value;
+                TestContext.BeyondDilate = value;
                 NotifyPropertyChanged();
             }
         }
@@ -129,6 +138,7 @@ namespace Prueba_de_stream
             set
             {
                 _beyondErode = value;
+                TestContext.BeyondErode = value;
                 NotifyPropertyChanged();
             }
         }
@@ -142,10 +152,13 @@ namespace Prueba_de_stream
             set
             {
                 _topErode = value;
+                TestContext.TopErode = value;
                 NotifyPropertyChanged();
             }
         }
         #endregion
+
+        public CameraCalibration TestContext { get; set; }
 
         #region Private variables
         private int _noiseBG = 38;

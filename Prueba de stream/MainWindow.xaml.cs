@@ -1,5 +1,6 @@
 ﻿using Emgu.CV;
 using Emgu.CV.Structure;
+using Prueba_de_stream.Cuda;
 using System;
 using System.Drawing;
 using System.IO;
@@ -14,13 +15,13 @@ namespace Prueba_de_stream
     public partial class MainWindow : Window
     {
         private bool _captureInProgress;
-        private CaptureCamera captureCamera;
+        private TestCaptureCamera captureCamera;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            captureCamera = new CaptureCamera();
+            captureCamera = new TestCaptureCamera();
             captureCamera.DisplayImages += DisplayImage;
             captureCamera.DisplayResult += DisplayResult;
             DataContext = captureCamera.context;

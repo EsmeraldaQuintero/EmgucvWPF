@@ -3,14 +3,30 @@ using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV;
 
-namespace Prueba_de_stream
+namespace Prueba_de_stream.Cuda
 {
-    public class ImagePreProcessorAlgorithms
+    public class TestImagePreProcessorAlgorithm
     {
-        private static ContextSurf context = ContextSurf.Instance;
+        private CameraCalibration context;
+        private const int RADIUS_GAUSSIANBLUR = 5;
+        private const int IMAGE_WIDTH = 640;
+        private const int IMAGE_HEIGHT = 480;
 
-        public static Mat ProcessingImage(Mat currentFrame, Mat backgroundFrame)
+        public CameraCalibration Context
         {
+            set
+            {
+                context = value;
+            }
+            get
+            {
+                return context;
+            }
+        }
+
+        public Mat ProcessingImage(Mat currentFrame, Mat backgroundFrame, CameraCalibration context)
+        {
+            this.context = context;
             Mat withoutBackgroundMask = new Mat();
             Mat segmentedMask = new Mat();
             Mat maskAnd = new Mat();
@@ -38,15 +54,15 @@ namespace Prueba_de_stream
             return contourMask.IsEmpty ? currentFrame : contourMask;
         }
 
-        public static Mat BackgroundRemover(Mat bgFrame, Mat currentFrame)
+        public Mat BackgroundRemover(Mat bgFrame, Mat currentFrame)
         {
             using (Mat bgMat = new Mat())
             using (Mat currentMat = new Mat())
             {
                 CvInvoke.CvtColor(bgFrame, bgMat, ColorConversion.Bgr2YCrCb);
                 CvInvoke.CvtColor(currentFrame, currentMat, ColorConversion.Bgr2YCrCb);
-                using (var bgImage = bgMat.ToImage<Ycc, byte>().Resize(context.TrainWidth, context.TrainHeight, Emgu.CV.CvEnum.Inter.Cubic))
-                using (var currentImage = currentMat.ToImage<Ycc, byte>().Resize(context.TrainWidth, context.TrainHeight, Emgu.CV.CvEnum.Inter.Cubic))
+                using (var bgImage = bgMat.ToImage<Ycc, byte>().Resize(IMAGE_WIDTH, IMAGE_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic))
+                using (var currentImage = currentMat.ToImage<Ycc, byte>().Resize(IMAGE_WIDTH, IMAGE_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic))
                 {
                     //Creating mask for remove background
                     Ycc thr = new Ycc(context.ClarifyBG, 0, 0);
@@ -68,13 +84,13 @@ namespace Prueba_de_stream
             }
         }
 
-        public static Mat SegmentationFilter(Mat withoutBackgroundFrame)
+        public Mat SegmentationFilter(Mat withoutBackgroundFrame)
         {
             using (Mat smoothFrame = new Mat())
             using (Mat hsvFrame = new Mat())
             {
                 //Appliying Gaussian blur for reduce noise on the image
-                System.Drawing.Size pxDiameter = new System.Drawing.Size(context.RadiusGussianBlur, context.RadiusGussianBlur);
+                System.Drawing.Size pxDiameter = new System.Drawing.Size(RADIUS_GAUSSIANBLUR, RADIUS_GAUSSIANBLUR);
                 CvInvoke.GaussianBlur(withoutBackgroundFrame, smoothFrame, pxDiameter, context.GaussianBlurVal, context.GaussianBlurVal);
 
                 //Segmenting image in HSV color
@@ -84,8 +100,8 @@ namespace Prueba_de_stream
                 var ch2 = channels[2];  //Value channel
 
                 //Selecting color range for the mask
-                Image<Gray, byte> huefilter = ch0.InRange(new Gray(context.MinHueForHSV), new Gray(context.MaxHueForHSV)).Resize(context.TrainWidth, context.TrainHeight, Emgu.CV.CvEnum.Inter.Cubic);
-                Image<Gray, byte> valfilter = ch2.InRange(new Gray(0), new Gray(55)).Resize(context.TrainWidth, context.TrainHeight, Emgu.CV.CvEnum.Inter.Cubic);
+                Image<Gray, byte> huefilter = ch0.InRange(new Gray(context.MinHueForHSV), new Gray(context.MaxHueForHSV)).Resize(IMAGE_WIDTH, IMAGE_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic);
+                Image<Gray, byte> valfilter = ch2.InRange(new Gray(0), new Gray(55)).Resize(IMAGE_WIDTH, IMAGE_HEIGHT, Emgu.CV.CvEnum.Inter.Cubic);
                 huefilter = huefilter.Or(valfilter);
 
                 //Creating mask
@@ -98,7 +114,7 @@ namespace Prueba_de_stream
             }
         }
 
-        public static Mat MorphologyFilter(Mat filterMask)
+        public Mat MorphologyFilter(Mat filterMask)
         {
             Mat beyondMask = new Mat();
             Mat topMask = new Mat();
@@ -112,7 +128,7 @@ namespace Prueba_de_stream
             return contoursFrame;
         }
 
-        private static Mat ErodeImage(Mat frame, int erodeSize)
+        private Mat ErodeImage(Mat frame, int erodeSize)
         {
             Mat erodeFrame = new Mat();
             Mat rect_12 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(erodeSize, erodeSize), new System.Drawing.Point(erodeSize / 2, erodeSize / 2));
@@ -120,7 +136,7 @@ namespace Prueba_de_stream
             return erodeFrame;
         }
 
-        private static Mat DilateImage(Mat frame, int dilateSize)
+        private Mat DilateImage(Mat frame, int dilateSize)
         {
             Mat dilateFrame = new Mat();
             Mat rect_6 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(dilateSize, dilateSize), new System.Drawing.Point(dilateSize / 2, dilateSize / 2));
