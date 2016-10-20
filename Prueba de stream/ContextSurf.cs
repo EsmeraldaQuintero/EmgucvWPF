@@ -158,7 +158,19 @@ namespace Prueba_de_stream
         }
         #endregion
 
-        public CameraCalibration TestContext { get; set; }
+        public CameraCalibration TestContext = new CameraCalibration()
+        {
+            NoiseBG = 38,
+            ClarifyBG = 38,
+            ErodeBG = 4,
+            DilateBG = 7,
+            GaussianBlurVal = 1.0,
+            MinHueForHSV = 85,
+            MaxHueForHSV = 100,
+            BeyondDilate = 5,
+            BeyondErode = 2,
+            TopErode = 5
+        };
 
         #region Private variables
         private int _noiseBG = 38;
