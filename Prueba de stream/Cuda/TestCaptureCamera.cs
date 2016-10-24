@@ -24,6 +24,11 @@ namespace Prueba_de_stream.Cuda
         public delegate void DisplayImagesEventHandler(Image<Gray,byte> currentFrame, Image<Gray, byte> minFrame, Image<Gray, byte> maxFrame, Image<Gray, byte> subFrame);
         public event DisplayImagesEventHandler DisplayImages;
 
+        int TRAIN_WIDTH = 320;
+        int TRAIN_HEIGHT = 240;
+        string path = "D:\\Users\\Odasoft\\Documents\\EmgucvWPF\\Prueba de stream\\training";
+        List<CudaSurfImage> weaponsTrained;
+
         public TestCaptureCamera()
         {
             _capture = null;
@@ -33,10 +38,12 @@ namespace Prueba_de_stream.Cuda
             imagePreProcessorAlgorithm = new TestImagePreProcessorAlgorithm();
             cudaSurfAlgorithm = new CudaSurfAlgorithm();
             cudaSURFMatchAlgorithm = new CudaSURFMatchAlgorithm();
-            //createCapture("http://192.168.1.99/mjpg/video.mjpg");
-            createCapture("");
+            createCapture("http://192.168.1.99/mjpg/video.mjpg");
+            ////createCapture("");
             context = ContextSurf.Instance;
             backgroundFrame = new Mat();
+            weaponsTrained = cudaSurfAlgorithm.LoadListOfWeaponsTrained(path, TRAIN_WIDTH, TRAIN_HEIGHT);
+
         }
 
         private void createCapture(string path)
@@ -68,6 +75,7 @@ namespace Prueba_de_stream.Cuda
         public void Start()
         {
             _capture.Start();
+            System.Threading.Thread.Sleep(200);
             _capture.Retrieve(backgroundFrame);
         }
 
@@ -84,7 +92,7 @@ namespace Prueba_de_stream.Cuda
 
             _capture.Retrieve(currentFrame);
 
-            if ( !currentFrame.IsEmpty )
+            if ( !currentFrame.IsEmpty && !backgroundFrame.IsEmpty)
             {
                 withoutBackgroundMask = imagePreProcessorAlgorithm.BackgroundRemover(backgroundFrame, currentFrame);
             }
@@ -132,20 +140,17 @@ namespace Prueba_de_stream.Cuda
 
             try
             {
-                int TRAIN_WIDTH = 640;
-                int TRAIN_HEIGHT = 480;
-                string path = "C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training";
-                List<CudaSurfImage> weaponsTrained = cudaSurfAlgorithm.LoadListOfWeaponsTrained(path, TRAIN_WIDTH, TRAIN_HEIGHT);
                 bool isWeaponDetected = false;
 
                 List<Mat> blobList = BlobAlgorithm.SplitImageByROI(filterMask);
 
                 foreach (var blob in blobList)
                 {
-                    CudaSurfImage observedSurfImage = cudaSurfAlgorithm.GetSurfFeaturesOf(filterMask);
+                    CudaSurfImage observedSurfImage = cudaSurfAlgorithm.GetSurfFeaturesOf(blob);
                     weaponsTrained.ForEach(weaponModel =>
                     {
                         isWeaponDetected = cudaSURFMatchAlgorithm.Process(weaponModel, observedSurfImage);
+                        //if weapon detected then show something theres actually nothing here now
                     });
                 }
             }

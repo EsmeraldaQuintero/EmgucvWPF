@@ -34,9 +34,14 @@ namespace Prueba_de_stream.Cuda
                 {
                     using (Mat source = new Mat(imagepath, Emgu.CV.CvEnum.LoadImageType.Grayscale))
                     {
-                        Mat img = source.Reshape(widthImg, heightImg);
-                        CudaSurfImage cudaSurfImage = GetSurfFeaturesOf(img);
-                        weaponsTrained.Add(cudaSurfImage);
+                        if (source.Width == widthImg && source.Height == heightImg)
+                        {
+                            Mat img = new Mat();
+                            source.CopyTo(img);
+                            //Mat img = source.Reshape(widthImg, heightImg);
+                            CudaSurfImage cudaSurfImage = GetSurfFeaturesOf(img);
+                            weaponsTrained.Add(cudaSurfImage);
+                        }
                     }
                 }
             }
@@ -47,7 +52,7 @@ namespace Prueba_de_stream.Cuda
         {
             if (System.IO.Directory.Exists(dirPath))
             {
-                return System.IO.Directory.EnumerateFiles(dirPath).Where(f => f.EndsWith(".jpg") || f.EndsWith(".png"));
+                return System.IO.Directory.EnumerateFiles(dirPath).Where(f => f.EndsWith(".jpg") || f.EndsWith(".png") || f.EndsWith(".PNG"));
             }
             return null;
         }

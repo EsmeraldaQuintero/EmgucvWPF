@@ -17,8 +17,8 @@ namespace Prueba_de_stream.Cuda
             cudaSURFMatchAlgorithm = new CudaSURFMatchAlgorithm();
             imagePreProcessorAlgorithm = new TestImagePreProcessorAlgorithm();
 
-            int TRAIN_WIDTH = 640;
-            int TRAIN_HEIGHT = 480;
+            int TRAIN_WIDTH = 635;
+            int TRAIN_HEIGHT = 475;
             string path = "C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training";
             weaponsTrained  = cudaSurfAlgorithm.LoadListOfWeaponsTrained(path, TRAIN_WIDTH, TRAIN_HEIGHT);
         }

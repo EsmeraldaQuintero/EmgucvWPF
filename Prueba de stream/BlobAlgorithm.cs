@@ -15,7 +15,7 @@ namespace Prueba_de_stream
     {
 
         private const int MIN_AREA_FOR_BLOB = 1000;
-        private const int MAX_AREA_FOR_BLOB = 10000;
+        private const int MAX_AREA_FOR_BLOB = 20000;
 
 
         public static List<Mat> SplitImageByROI(Mat contourMask)
@@ -33,10 +33,14 @@ namespace Prueba_de_stream
                 foreach (var pair in blobs)
                 {
                     Rectangle cropRectangle = pair.Value.BoundingBox;
-                    contourImg.ROI = cropRectangle;
-                    Mat newImg = new Mat();
-                    contourImg.Mat.CopyTo(newImg);
-                    blobList.Add(newImg);
+                    if (cropRectangle.Width >= 200 && cropRectangle.Height >=200)
+                    {
+                        contourImg.ROI = cropRectangle;
+                        Mat newImg = new Mat();
+                        contourImg.Mat.CopyTo(newImg);
+                        blobList.Add(newImg);
+                    }
+
                 }
 
             }

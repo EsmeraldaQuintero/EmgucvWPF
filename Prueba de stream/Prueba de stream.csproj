@@ -119,18 +119,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="training\book.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="training\books.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="training\bRainbow.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="training\books2.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="training\6.PNG" />
     <Resource Include="training\7.PNG" />
   </ItemGroup>
@@ -162,7 +150,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="training\20.PNG" />
-    <Resource Include="training\21.PNG" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

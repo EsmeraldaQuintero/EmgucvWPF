@@ -36,7 +36,7 @@ namespace Prueba_de_stream.Cuda
                 byte[] data = VoteForDistanceAndUniqueness(matches, modelWeapon, observedCamera);
                 System.Runtime.InteropServices.Marshal.Copy(data, START_IDX, matchesMask.DataPointer, matches.Size);
                 int nonZeroCountMatches = CvInvoke.CountNonZero(matchesMask);
-                if (nonZeroCountMatches >= modelWeapon.cpuKeyPoints.Size / 4)
+                if (nonZeroCountMatches >= modelWeapon.cpuKeyPoints.Size / 10)
                     return true;
             }
             return false;
