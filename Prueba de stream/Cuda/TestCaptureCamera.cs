@@ -18,14 +18,14 @@ namespace Prueba_de_stream.Cuda
         private TestImagePreProcessorAlgorithm imagePreProcessorAlgorithm;
         private CudaSurfAlgorithm cudaSurfAlgorithm;
         private CudaSURFMatchAlgorithm cudaSURFMatchAlgorithm;
-        public delegate void DisplayResultEventHandler(Image<Bgr, byte> resultFrame, long matchTime);
+        public delegate void DisplayResultEventHandler(Image<Gray, byte> resultFrame, long matchTime);
         public event DisplayResultEventHandler DisplayResult;
 
         public delegate void DisplayImagesEventHandler(Image<Gray,byte> currentFrame, Image<Gray, byte> minFrame, Image<Gray, byte> maxFrame, Image<Gray, byte> subFrame);
         public event DisplayImagesEventHandler DisplayImages;
 
-        int TRAIN_WIDTH = 320;
-        int TRAIN_HEIGHT = 240;
+        int TRAIN_WIDTH = 266;
+        int TRAIN_HEIGHT = 200;
         string path = "D:\\Users\\Odasoft\\Documents\\EmgucvWPF\\Prueba de stream\\training";
         List<CudaSurfImage> weaponsTrained;
 
@@ -123,6 +123,8 @@ namespace Prueba_de_stream.Cuda
                     img4 = filterMask.ToImage<Gray, byte>();
 
                     DisplayImages?.Invoke(img1, img2, img3, img4);
+                    //DisplayResult?.Invoke(img4, 1);
+
                 }
 
                 finally
@@ -147,10 +149,21 @@ namespace Prueba_de_stream.Cuda
                 foreach (var blob in blobList)
                 {
                     CudaSurfImage observedSurfImage = cudaSurfAlgorithm.GetSurfFeaturesOf(blob);
+                    if (observedSurfImage.cpuKeyPoints.Size > 500)
+                    {
+                        string path1 = "D:\\Users\\Odasoft\\Documents\\EmgucvWPF\\Prueba de stream\\training\\" + Guid.NewGuid().ToString() + ".PNG";
+                        observedSurfImage.gpuMatImage.ToMat().ToImage<Gray, byte>().Save(path1);
+                    }
+
                     weaponsTrained.ForEach(weaponModel =>
                     {
                         isWeaponDetected = cudaSURFMatchAlgorithm.Process(weaponModel, observedSurfImage);
                         //if weapon detected then show something theres actually nothing here now
+                        //if (isWeaponDetected)
+                        //{
+                        //    var img = observedSurfImage.gpuMatImage.ToMat().ToImage<Gray, byte>();
+                        //    DisplayResult?.Invoke(img, 10000);
+                        //}
                     });
                 }
             }

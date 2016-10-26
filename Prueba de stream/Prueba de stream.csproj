@@ -119,40 +119,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="training\6.PNG" />
-    <Resource Include="training\7.PNG" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="training\5.PNG" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="training\1.PNG" />
-    <Resource Include="training\2.PNG" />
-    <Resource Include="training\3.PNG" />
-    <Resource Include="training\4.PNG" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="training\8.PNG" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="training\10.PNG" />
-    <Resource Include="training\11.PNG" />
-    <Resource Include="training\12.PNG" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="training\13.PNG" />
-    <Resource Include="training\14.PNG" />
-    <Resource Include="training\15.PNG" />
-    <Resource Include="training\16.PNG" />
-    <Resource Include="training\17.PNG" />
-    <Resource Include="training\18.PNG" />
-    <Resource Include="training\19.PNG" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="training\20.PNG" />
-  </ItemGroup>
-  <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="training\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

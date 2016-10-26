@@ -34,7 +34,7 @@ namespace Prueba_de_stream.Cuda
                 {
                     using (Mat source = new Mat(imagepath, Emgu.CV.CvEnum.LoadImageType.Grayscale))
                     {
-                        if (source.Width == widthImg && source.Height == heightImg)
+                        if (source.Width >= 200 && source.Height >= 200)
                         {
                             Mat img = new Mat();
                             source.CopyTo(img);
