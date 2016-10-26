@@ -114,6 +114,9 @@ namespace Prueba_de_stream.Cuda
             }
         }
 
+
+
+
         public Mat MorphologyFilter(Mat filterMask)
         {
             Mat beyondMask = new Mat();
@@ -142,6 +145,63 @@ namespace Prueba_de_stream.Cuda
             Mat rect_6 = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(dilateSize, dilateSize), new System.Drawing.Point(dilateSize / 2, dilateSize / 2));
             CvInvoke.Dilate(frame, dilateFrame, rect_6, new System.Drawing.Point(1, 1), 2, BorderType.Default, new MCvScalar(0, 0, 0));
             return dilateFrame;
+        }
+
+        public Mat BlobFilter(Mat withoutBackgroundFrame)
+        {
+            int he = withoutBackgroundFrame.Size.Height;
+            int wi = withoutBackgroundFrame.Size.Width;
+
+            using (Mat smoothFrame = new Mat())
+            using (Mat hsvFrame = new Mat())
+            {
+                //Appliying Gaussian blur for reduce noise on the image
+                //System.Drawing.Size pxDiameter = new System.Drawing.Size(RADIUS_GAUSSIANBLUR, RADIUS_GAUSSIANBLUR);
+                //CvInvoke.GaussianBlur(withoutBackgroundFrame, smoothFrame, pxDiameter, context.GaussianBlurVal, context.GaussianBlurVal);
+
+                withoutBackgroundFrame.CopyTo(smoothFrame);
+                //since this is a gray mat convert it to a brg one more time
+                CvInvoke.CvtColor(smoothFrame, smoothFrame, ColorConversion.Gray2Bgr);
+                
+                //Segmenting image in HSV color
+                CvInvoke.CvtColor(smoothFrame, hsvFrame, ColorConversion.Bgr2Hsv);
+                Image<Gray, byte>[] channels = hsvFrame.ToImage<Hsv, byte>().Split();
+                var ch0 = channels[0];  //Hue channel
+                var ch2 = channels[2];  //Value channel
+
+                //Selecting color range for the mask
+                Image<Gray, byte> huefilter;
+                Image<Gray, byte> valfilter;
+                int h = 0;
+                int w = 0;
+                bool isHeight = (withoutBackgroundFrame.Size.Height > withoutBackgroundFrame.Size.Width);
+                if (isHeight)
+                {
+                    w = (200 - withoutBackgroundFrame.Size.Width % 200) + withoutBackgroundFrame.Size.Width;
+                    h = (int)(1.0 / withoutBackgroundFrame.Size.Width * 200 * withoutBackgroundFrame.Size.Height);
+                }
+                else
+                {
+                    h = (200 - withoutBackgroundFrame.Size.Height % 200) + withoutBackgroundFrame.Size.Height;
+                    w = (int)(1.0 / withoutBackgroundFrame.Size.Height * 200 * withoutBackgroundFrame.Size.Width);
+                }
+                huefilter = ch0.InRange(new Gray(context.MinHueForHSV), new Gray(context.MaxHueForHSV)).Resize(w, h, Emgu.CV.CvEnum.Inter.Cubic);
+                valfilter = ch2.InRange(new Gray(0), new Gray(55)).Resize(w, h, Emgu.CV.CvEnum.Inter.Cubic);
+                
+
+                huefilter = huefilter.Or(valfilter).Not();
+
+                //Creating mask
+                Mat mask = new Mat();
+                //huefilter.Mat.CopyTo(mask);
+
+                mask = ErodeImage(huefilter.Mat,2);
+                mask = DilateImage(mask, 3);
+                CvInvoke.CvtColor(mask, mask, ColorConversion.Gray2Bgr);
+                CvInvoke.CvtColor(mask, mask, ColorConversion.Bgr2Gray);
+
+                return mask;
+            }
         }
     }
 }

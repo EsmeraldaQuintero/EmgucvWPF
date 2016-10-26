@@ -148,22 +148,29 @@ namespace Prueba_de_stream.Cuda
 
                 foreach (var blob in blobList)
                 {
-                    CudaSurfImage observedSurfImage = cudaSurfAlgorithm.GetSurfFeaturesOf(blob);
-                    if (observedSurfImage.cpuKeyPoints.Size > 500)
+                    if(blob.Size.Height <200 || blob.Size.Width<200)
                     {
-                        string path1 = "D:\\Users\\Odasoft\\Documents\\EmgucvWPF\\Prueba de stream\\training\\" + Guid.NewGuid().ToString() + ".PNG";
-                        observedSurfImage.gpuMatImage.ToMat().ToImage<Gray, byte>().Save(path1);
+                        Mat aux = imagePreProcessorAlgorithm.BlobFilter(blob);
+                        aux.CopyTo(blob);
                     }
+
+
+                    CudaSurfImage observedSurfImage = cudaSurfAlgorithm.GetSurfFeaturesOf(blob);
+                    //if (observedSurfImage.cpuKeyPoints.Size > 500)
+                    //{
+                    //    string path1 = "D:\\Users\\Odasoft\\Documents\\EmgucvWPF\\Prueba de stream\\training\\" + Guid.NewGuid().ToString() + ".PNG";
+                    //    observedSurfImage.gpuMatImage.ToMat().ToImage<Gray, byte>().Save(path1);
+                    //}
 
                     weaponsTrained.ForEach(weaponModel =>
                     {
                         isWeaponDetected = cudaSURFMatchAlgorithm.Process(weaponModel, observedSurfImage);
-                        //if weapon detected then show something theres actually nothing here now
-                        //if (isWeaponDetected)
-                        //{
-                        //    var img = observedSurfImage.gpuMatImage.ToMat().ToImage<Gray, byte>();
-                        //    DisplayResult?.Invoke(img, 10000);
-                        //}
+                       //if weapon detected then show something theres actually nothing here now
+                        if (isWeaponDetected)
+                        {
+                            var img = observedSurfImage.gpuMatImage.ToMat().ToImage<Gray, byte>();
+                            DisplayResult?.Invoke(img, 10000);
+                        }
                     });
                 }
             }
