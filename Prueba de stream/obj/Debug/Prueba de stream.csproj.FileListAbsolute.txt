@@ -46,3 +46,27 @@ C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream.cs
 C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream.exe
 C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream.pdb
 C:\Users\uabc\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream.csprojResolveAssemblyReference.cache
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\bin\Debug\Prueba de stream.exe.config
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream.exe
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream.pdb
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\bin\Debug\Prueba de stream.exe
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\bin\Debug\Prueba de stream.pdb
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\bin\Debug\ZedGraph.dll
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\bin\Debug\Emgu.CV.UI.xml
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\bin\Debug\Emgu.CV.World.xml
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream.csprojResolveAssemblyReference.cache
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\obj\Debug\MainWindow.g.cs
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\obj\Debug\App.g.cs
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream_MarkupCompile.cache
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream_MarkupCompile.lref
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\obj\Debug\MainWindow.baml
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream.g.resources
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba_de_stream.Properties.Resources.resources
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\obj\Debug\Prueba de stream.csproj.GenerateResource.Cache
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\bin\Debug\Emgu.CV.UI.dll
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\bin\Debug\Emgu.CV.World.dll
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\bin\Debug\Emgu.CV.UI.pdb
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\bin\Debug\Emgu.CV.World.pdb
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\bin\Debug\ZedGraph.xml
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\bin\Debug\zh-CN\Emgu.CV.UI.resources.dll
+C:\Users\phoenix\Documents\EmgucvWPF\Prueba de stream\bin\Debug\zh-CN\ZedGraph.resources.dll

@@ -92,11 +92,12 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
-            <Image x:Name="BackgroundImage"         Stretch="Fill" Grid.Column="0"/>
+            <Image x:Name="BackgroundImage"         Stretch="Fill" Grid.Column="4" Source="{Binding PruebaIMG, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+            </Image>
             <Image x:Name="WithoutBackgroundImage"  Stretch="Fill" Grid.Column="1"/>
             <Image x:Name="SegmentedImage"          Stretch="Fill" Grid.Column="2"/>
             <Image x:Name="ContoursImage"           Stretch="Fill" Grid.Column="3"/>
-            <Image x:Name="ResultImage"             Stretch="Fill" Grid.Column="4"/>
+            <Image x:Name="ResultImage"             Stretch="Fill" Grid.Column="0"/>
         </Grid>
     </Grid>
 </Window>

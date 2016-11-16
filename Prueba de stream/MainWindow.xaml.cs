@@ -23,11 +23,11 @@ namespace Prueba_de_stream
             captureCamera = new CaptureCamera();
             captureCamera.DisplayImages += DisplayImage;
             captureCamera.DisplayResult += DisplayResult;
-            DataContext = captureCamera.context;
 
             CaptureButton.Content = "Start Capture";
             ScreenShotButton.Content = "Make Screenshot";
             OpenImageButton.Content = "Open Image";
+            DataContext = ContextSurf.Instance;
         }
 
         private void captureButtonClick(object sender, EventArgs e)
@@ -83,7 +83,7 @@ namespace Prueba_de_stream
         {
             using (MemoryStream memory = new MemoryStream())
             {
-                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
+                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.MemoryBmp);
                 memory.Position = 0;
                 BitmapImage bitmapimage = new BitmapImage();
                 bitmapimage.BeginInit();

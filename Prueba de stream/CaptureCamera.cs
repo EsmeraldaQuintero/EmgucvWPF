@@ -6,6 +6,10 @@ using Emgu.CV;
 using System.Collections.Generic;
 using Microsoft.Win32;
 using System.IO;
+using System.Windows.Media.Imaging;
+using System.Drawing;
+using System.Windows.Threading;
+using PedestrianDetection;
 
 namespace Prueba_de_stream
 {
@@ -29,8 +33,8 @@ namespace Prueba_de_stream
             _ready = false;
             CvInvoke.UseOpenCL = false;
 
-            //createCapture("http://192.168.1.99/mjpg/video.mjpg");
-            createCapture("");
+            createCapture("http://192.168.1.99/mjpg/video.mjpg");
+            //createCapture("");
             context = ContextSurf.Instance;
             backgroundFrame = new Mat();
         }
@@ -97,13 +101,30 @@ namespace Prueba_de_stream
 
         private void ProcessFrame(object sender, EventArgs e)
         {
-            long matchTime = 0;
-
             Mat currentFrame = new Mat();
-            Mat withoutBackgroundMask = new Mat();
-            Mat segmentedMask = new Mat();
-            Mat maskAnd = new Mat();
-            Mat filterMask = new Mat();
+            _capture.Retrieve(currentFrame);
+
+            if (!currentFrame.IsEmpty)
+            {
+                bool tryUseCuda = true;
+                long processingTime;
+                Rectangle[] results = FindPedestrian.Find(currentFrame, tryUseCuda, out processingTime);
+                foreach (Rectangle rect in results)
+                {
+                    CvInvoke.Rectangle(currentFrame, rect, new Bgr(Color.Red).MCvScalar);
+                }
+                context.PruebaIMG = ToImageSource(currentFrame.ToImage<Bgr,byte>().Bitmap);
+            }
+
+            
+
+            //long matchTime = 0;
+
+            //Mat currentFrame = new Mat();
+            //Mat withoutBackgroundMask = new Mat();
+            //Mat segmentedMask = new Mat();
+            //Mat maskAnd = new Mat();
+            //Mat filterMask = new Mat();
 
             //_capture.Retrieve(currentFrame);
 
@@ -137,7 +158,13 @@ namespace Prueba_de_stream
             //        img3 = maskAnd.ToImage<Gray, byte>();
             //        img4 = filterMask.ToImage<Gray, byte>();
 
-            //        DisplayImages?.Invoke(img1, img2, img3, img4);
+            //        Dispatcher.CurrentDispatcher.Invoke(new Action(() =>
+            //        {
+            //            Bitmap bmimg = withoutBackgroundMask.ToImage<Gray, byte>().Bitmap;
+            //            context.PruebaIMG = ToImageSource(bmimg);
+            //        }));
+
+            //        //DisplayImages?.Invoke(img1, img2, img3, img4);
             //    }
 
             //    finally
@@ -189,60 +216,77 @@ namespace Prueba_de_stream
             //catch (ArgumentException ae) { }
 
 
-            if (!imgOpenFrame.IsEmpty)
-            {
-                segmentedMask = ImagePreProcessorAlgorithms.SegmentationFilter(imgOpenFrame);
-            }
-            if (!segmentedMask.IsEmpty)
-            {
-                filterMask = ImagePreProcessorAlgorithms.MorphologyFilter(segmentedMask);
-            }
+            //if (!imgOpenFrame.IsEmpty)
+            //{
+            //    segmentedMask = ImagePreProcessorAlgorithms.SegmentationFilter(imgOpenFrame);
+            //}
+            //if (!segmentedMask.IsEmpty)
+            //{
+            //    filterMask = ImagePreProcessorAlgorithms.MorphologyFilter(segmentedMask);
+            //}
 
-            if (!filterMask.IsEmpty)
-            {
-                Image<Gray, byte> img1 = null;
-                Image<Gray, byte> img2 = null;
-                Image<Gray, byte> img3 = null;
-                Image<Gray, byte> img4 = null;
+            //if (!filterMask.IsEmpty)
+            //{
+            //    Image<Gray, byte> img1 = null;
+            //    Image<Gray, byte> img2 = null;
+            //    Image<Gray, byte> img3 = null;
+            //    Image<Gray, byte> img4 = null;
 
-                try
-                {
-                    img1 = imgOpenFrame.ToImage<Gray, byte>();
-                    img2 = segmentedMask.ToImage<Gray, byte>();
-                    img3 = filterMask.ToImage<Gray, byte>();
-                    img4 = filterMask.ToImage<Gray, byte>();
-                    saveImg = filterMask;
+            //    try
+            //    {
+            //        img1 = imgOpenFrame.ToImage<Gray, byte>();
+            //        img2 = segmentedMask.ToImage<Gray, byte>();
+            //        img3 = filterMask.ToImage<Gray, byte>();
+            //        img4 = filterMask.ToImage<Gray, byte>();
+            //        saveImg = filterMask;
 
 
-                    DisplayImages?.Invoke(img1, img2, img3, img4);
-                    DisplayResult?.Invoke(filterMask.ToImage<Bgr, byte>(), 100);
-                }
+            //        DisplayImages?.Invoke(img1, img2, img3, img4);
+            //        DisplayResult?.Invoke(filterMask.ToImage<Bgr, byte>(), 100);
+            //    }
 
-                finally
-                {
-                    if (img1 != null)
-                        ((IDisposable)img1).Dispose();
-                    if (img2 != null)
-                        ((IDisposable)img2).Dispose();
-                    if (img3 != null)
-                        ((IDisposable)img3).Dispose();
-                    if (img4 != null)
-                        ((IDisposable)img4).Dispose();
-                }
-            }
+            //    finally
+            //    {
+            //        if (img1 != null)
+            //            ((IDisposable)img1).Dispose();
+            //        if (img2 != null)
+            //            ((IDisposable)img2).Dispose();
+            //        if (img3 != null)
+            //            ((IDisposable)img3).Dispose();
+            //        if (img4 != null)
+            //            ((IDisposable)img4).Dispose();
+            //    }
+            //}
         }
 
-        private List<Mat> GetModels()
+        private BitmapImage ToImageSource(Bitmap bitmap)
         {
-            List<Mat> modelList = new List<Mat>();
-            for (int i = 1; i < 10; i++)
+            using (MemoryStream memory = new MemoryStream())
             {
-                string path = "C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\" + i + ".png";
-                Mat modelFrame = CvInvoke.Imread(path, LoadImageType.Grayscale);
-                if (modelFrame != null && !modelFrame.IsEmpty)
-                    modelList.Add(modelFrame);
+                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
+                memory.Position = 0;
+                BitmapImage bitmapimage = new BitmapImage();
+                bitmapimage.BeginInit();
+                bitmapimage.StreamSource = memory;
+                bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapimage.EndInit();
+                bitmapimage.Freeze();
+
+                return bitmapimage;
             }
-            return modelList;
         }
+
+        //private List<Mat> GetModels()
+        //{
+        //    List<Mat> modelList = new List<Mat>();
+        //    for (int i = 1; i < 10; i++)
+        //    {
+        //        string path = "C:\\Users\\uabc\\Documents\\EmgucvWPF\\Prueba de stream\\training\\" + i + ".png";
+        //        Mat modelFrame = CvInvoke.Imread(path, LoadImageType.Grayscale);
+        //        if (modelFrame != null && !modelFrame.IsEmpty)
+        //            modelList.Add(modelFrame);
+        //    }
+        //    return modelList;
+        //}
     }
 }

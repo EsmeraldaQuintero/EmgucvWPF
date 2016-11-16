@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace Prueba_de_stream
 {
@@ -211,7 +212,22 @@ namespace Prueba_de_stream
         public int MaxSatBrigValue => MAX_SAT_BRIG_VALUE;
         private const int MIN_SAT_BRIG_VALUE = 0;
         private const int MAX_SAT_BRIG_VALUE = 245;
-#endregion
+        #endregion
+
+        private BitmapImage _pruebaIMG = new BitmapImage();
+        public BitmapImage PruebaIMG
+        {
+            get
+            {
+                return _pruebaIMG;
+            }
+            set
+            {
+                _pruebaIMG = value;
+                NotifyPropertyChanged();
+            }
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 
